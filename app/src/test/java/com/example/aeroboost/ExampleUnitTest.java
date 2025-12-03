@@ -1,4 +1,4 @@
-package com.example.test;
+package com.example.aeroboost;
 
 import org.junit.Test;
 

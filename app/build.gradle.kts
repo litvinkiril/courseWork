@@ -3,13 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.test"
-    compileSdk {
-        version = release(36)
-    }
+    namespace = "com.example.aeroboost"
+    compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.test"
+        applicationId = "com.example.aeroboost"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -31,18 +29,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    externalNativeBuild {
-        cmake {
-            path = file("src/main/cpp/CMakeLists.txt")
-            version = "3.22.1"
-        }
-    }
-    buildFeatures {
-        viewBinding = true
-    }
 }
 
 dependencies {
+
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)

@@ -10,9 +10,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Test001">
+        android:theme="@style/Theme.AeroBoost">
         <activity
-            android:name="com.example.test001.MainActivity"
+            android:name="com.example.aeroboost.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
