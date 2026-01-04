@@ -1,5 +1,3 @@
 <resources>
-    <string name="app_name">AeroBoost</string>
-    <string name="button_move_text">Поехали</string>
-    <string name="button_show_text">Показать</string>
+    <string name="app_name">airplane</string>
 </resources>

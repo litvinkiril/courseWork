@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/main_board"
+    tools:context=".SecondActivity">
+
+    <!-- Отступ сверху -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="30dp" />
+
+    <!-- Заголовок -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="САМОЛЕТЫ"
+        android:textColor="#FFFFFF"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="30dp" />
+
+    <!-- СПИСОК САМОЛЕТОВ - ШИРОКИЕ СТРОКИ -->
+    <ListView
+        android:id="@+id/planesListView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="#33000000"
+        android:dividerHeight="2dp"
+        android:fastScrollEnabled="true"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:scrollbars="vertical" />
+
+</LinearLayout>
