@@ -1,4 +1,4 @@
-package com.example.aeroboost.view;
+package ru.livins.aeroboost.view;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -10,7 +10,7 @@ import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
-import com.example.aeroboost.R;
+import ru.livins.aeroboost.R;
 
 import org.jetbrains.annotations.NotNull;
 

@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.aeroboost"
+    namespace = "ru.livins.aeroboost"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.aeroboost"
+        applicationId = "ru.livins.aeroboost"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

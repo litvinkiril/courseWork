@@ -1,4 +1,4 @@
-package com.example.aeroboost;
+package ru.livins.aeroboost;
 
 import org.junit.Test;
 

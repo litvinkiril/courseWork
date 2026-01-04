@@ -1,4 +1,4 @@
-package com.example.aeroboost;
+package ru.livins.aeroboost;
 
 import android.os.Bundle;
 import android.view.View;
@@ -9,7 +9,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.aeroboost.view.GraphicsView;
+import ru.livins.aeroboost.view.GraphicsView;
 
 public class MainActivity extends AppCompatActivity {
 
