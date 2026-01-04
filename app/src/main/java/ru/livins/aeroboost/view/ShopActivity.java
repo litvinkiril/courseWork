@@ -12,7 +12,7 @@ import java.util.List;
 
 import ru.livins.aeroboost.R;
 
-public class SecondActivity extends AppCompatActivity
+public class ShopActivity extends AppCompatActivity
         implements PlanesAdapter.OnPlaneClickListener {
 
     private static final String TAG = "SecondActivity";
@@ -23,7 +23,7 @@ public class SecondActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.second_activity);
+        setContentView(R.layout.shop_activity);
 
         Log.d(TAG, "SecondActivity started");
 

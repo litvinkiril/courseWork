@@ -14,25 +14,25 @@ import ru.livins.aeroboost.R;
 
 import org.jetbrains.annotations.NotNull;
 
-public class GraphicsView extends View {
+public class GameBoardView extends View {
 
     private Bitmap planeBitmap;
     private boolean planeVisible = false;
     private float planePosition = 0.0f;
 
-    public GraphicsView(Context context, AttributeSet attrs, int defStyle)
+    public GameBoardView(Context context, AttributeSet attrs, int defStyle)
     {
         super(context, attrs, defStyle);
         init(context);
     }
 
-    public GraphicsView(Context context, AttributeSet attrs)
+    public GameBoardView(Context context, AttributeSet attrs)
     {
         super(context, attrs);
         init(context);
     }
 
-    public GraphicsView(Context context) {
+    public GameBoardView(Context context) {
         super(context);
         init(context);
     }

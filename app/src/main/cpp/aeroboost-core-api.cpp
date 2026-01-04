@@ -41,7 +41,7 @@ int calculateTotalCps(const Plane& plane) {
 
 // Получить цену самолета
 extern "C" JNIEXPORT jint JNICALL
-Java_com_example_airplane_SecondActivity_getPlanePriceNative(
+Java_com_example_aeroboost_SecondActivity_getPlanePriceNative(
         JNIEnv* env, jobject thiz, jint planeId) {
 
     // Проверяем что planeId в пределах массива
@@ -55,7 +55,7 @@ Java_com_example_airplane_SecondActivity_getPlanePriceNative(
 
 // Получить количество купленных
 extern "C" JNIEXPORT jint JNICALL
-Java_com_example_airplane_SecondActivity_getPlanePurchasedNative(
+Java_com_example_aeroboost_SecondActivity_getPlanePurchasedNative(
         JNIEnv* env, jobject thiz, jint planeId) {
 
     if (planeId < 0 || planeId >= planes.size()) {
@@ -67,7 +67,7 @@ Java_com_example_airplane_SecondActivity_getPlanePurchasedNative(
 
 // Получить общий C/S
 extern "C" JNIEXPORT jint JNICALL
-Java_com_example_airplane_SecondActivity_getPlaneTotalCpsNative(
+Java_com_example_aeroboost_SecondActivity_getPlaneTotalCpsNative(
         JNIEnv* env, jobject thiz, jint planeId) {
 
     if (planeId < 0 || planeId >= planes.size()) {
@@ -79,7 +79,7 @@ Java_com_example_airplane_SecondActivity_getPlaneTotalCpsNative(
 
 // Попытаться купить
 extern "C" JNIEXPORT jboolean JNICALL
-Java_com_example_airplane_SecondActivity_tryBuyPlaneNative(
+Java_com_example_aeroboost_SecondActivity_tryBuyPlaneNative(
         JNIEnv* env, jobject thiz, jint planeId) {
 
     if (planeId < 0 || planeId >= planes.size()) {

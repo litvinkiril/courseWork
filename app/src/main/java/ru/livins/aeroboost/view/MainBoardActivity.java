@@ -1,20 +1,14 @@
 package ru.livins.aeroboost.view;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import ru.livins.aeroboost.R;
-import ru.livins.aeroboost.view.GraphicsView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainBoardActivity extends AppCompatActivity {
 
     /*@Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     }*/
 
     static {
-        System.loadLibrary("airplane");
+        System.loadLibrary("aeroboost-core");
     }
 
     private GridView gameGrid;
@@ -49,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.main_board_activity);
 
         // GridView
         gameGrid = findViewById(R.id.gameGrid);
@@ -77,6 +71,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public native String stringFromJNI();
+    //public native String stringFromJNI();
 
 }
