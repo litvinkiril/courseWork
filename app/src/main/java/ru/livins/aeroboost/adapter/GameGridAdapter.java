@@ -9,32 +9,22 @@ import ru.livins.aeroboost.R;
 
 public class GameGridAdapter extends BaseAdapter {
     private Context context;
-    private int cols = 2;  // 2 колонки
-    private int rows = 5;  // 5 строк
-    private boolean[][] occupied;  // массив состояний [строка][колонка]
+    private boolean[][] grid = new boolean[5][2]; // 5 строк, 2 колонки
 
     public GameGridAdapter(Context context) {
         this.context = context;
-        this.occupied = new boolean[rows][cols];
-
-        // Инициализация - все ячейки свободны
-        for (int row = 0; row < rows; row++) {
-            for (int col = 0; col < cols; col++) {
-                occupied[row][col] = false;
-            }
-        }
     }
 
     @Override
     public int getCount() {
-        return cols * rows;  // 2 * 5 = 10 ячеек
+        return 10; // 5×2 = 10 ячеек
     }
 
     @Override
     public Object getItem(int position) {
-        int row = position / cols;
-        int col = position % cols;
-        return occupied[row][col];
+        int row = position / 2; // делим на 2 колонки
+        int col = position % 2; // остаток от деления
+        return grid[row][col];
     }
 
     @Override
@@ -44,55 +34,38 @@ public class GameGridAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ImageView imageView;
-
+        ImageView iv;
         if (convertView == null) {
-            imageView = new ImageView(context);
-
-            // УМЕНЬШАЕМ РАЗМЕР: 80dp вместо расчета по ширине экрана
-            int cellSizeInDp = 80; // желаемый размер в dp
-            int cellSizeInPx = (int) (cellSizeInDp * context.getResources().getDisplayMetrics().density);
-
-            imageView.setLayoutParams(new ViewGroup.LayoutParams(cellSizeInPx, cellSizeInPx));
-            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            imageView.setAdjustViewBounds(true);
-
-            // Отступы внутри ячейки
-            imageView.setPadding(5, 5, 5, 5);
+            iv = new ImageView(context);
+            iv.setLayoutParams(new ViewGroup.LayoutParams(100, 100));
+            iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
         } else {
-            imageView = (ImageView) convertView;
+            iv = (ImageView) convertView;
         }
 
-        // Всегда empty_place
-        imageView.setImageResource(R.drawable.empty_space);
+        int row = position / 2;
+        int col = position % 2;
 
-        // Убираем альфа-эффект для чистоты
-        imageView.setAlpha(1.0f);
-
-        return imageView;
-    }
-    // Методы для управления состоянием
-    public void setOccupied(int row, int col, boolean isOccupied) {
-        if (row >= 0 && row < rows && col >= 0 && col < cols) {
-            occupied[row][col] = isOccupied;
-            notifyDataSetChanged();
+        // Красный если занято, зеленый если свободно
+        if (grid[row][col]) {
+            iv.setImageResource(R.drawable.empty_space);
+        } else {
+            iv.setImageResource(R.drawable.empty_space);
         }
-    }
 
-    public boolean isOccupied(int row, int col) {
-        if (row >= 0 && row < rows && col >= 0 && col < cols) {
-            return occupied[row][col];
-        }
-        return false;
+        return iv;
     }
 
     public void toggleCell(int row, int col) {
-        if (row >= 0 && row < rows && col >= 0 && col < cols) {
-            occupied[row][col] = !occupied[row][col];
-            notifyDataSetChanged();
-        }
+        grid[row][col] = !grid[row][col];
+        notifyDataSetChanged();
     }
 
-    public int getCols() { return cols; }
-    public int getRows() { return rows; }
+    public boolean isOccupied(int row, int col) {
+        return grid[row][col];
+    }
+
+    public int getCols() {
+        return 2; // всегда 2 колонки
+    }
 }
