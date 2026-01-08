@@ -3,6 +3,7 @@ package ru.livins.aeroboost.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,8 +17,8 @@ public class StartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.start_activity);
 
-        if (savedInstanceState == null) {
-        }
+        /*if (savedInstanceState == null) {
+        }*/
     }
 
     public void onStartGame(View view) {
@@ -26,5 +27,11 @@ public class StartActivity extends AppCompatActivity {
         var startGameData = new StartGameData("Andrej");
         startGameDataIntent.putExtra(StartGameData.class.getSimpleName(), startGameData);
         startActivity(startGameDataIntent);
+    }
+
+    public void onSettings(View view) {
+        Toast.makeText(StartActivity.this,
+                "Settings",
+                Toast.LENGTH_SHORT).show();
     }
 }

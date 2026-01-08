@@ -13,7 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_margin="20pt"
-        android:text="Настройки" />
+        android:text="Настройки"
+        android:onClick="onSettings"/>
 
     <Button
         android:id="@+id/button2"

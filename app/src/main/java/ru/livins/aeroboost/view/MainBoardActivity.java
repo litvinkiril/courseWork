@@ -12,8 +12,8 @@ public class MainBoardActivity extends AppCompatActivity {
         System.loadLibrary("aeroboost-core");
     }
 
-    private ImageView[][] cells = new ImageView[5][2];
-    private boolean[][] occupied = new boolean[5][2];
+    private final ImageView[][] cells = new ImageView[5][2];
+    private final boolean[][] occupied = new boolean[5][2];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,10 +49,27 @@ public class MainBoardActivity extends AppCompatActivity {
 
     private void toggleCell(int row, int col) {
         occupied[row][col] = !occupied[row][col];
-        if (occupied[row][col]) {
+        if (row == 0 && col == 0) {
+            onButtonShow();
+        }
+        else if (row == 0 && col == 1) {
+            onButtonMove();
+        }
+        else if (occupied[row][col]) {
             cells[row][col].setBackgroundResource(R.drawable.empty_space);
         } else {
             cells[row][col].setBackgroundResource(R.drawable.empty_space);
         }
+    }
+
+    private void onButtonShow() {
+        GameBoardView planesView = this.findViewById(R.id.gameBoardView);
+        planesView.showPlane();
+    }
+
+    private void onButtonMove() {
+        GameBoardView planesView = this.findViewById(R.id.gameBoardView);
+        var planePosition = planesView.getPlanePosition();
+        planesView.setPlanePosition(planePosition + 0.05f);
     }
 }

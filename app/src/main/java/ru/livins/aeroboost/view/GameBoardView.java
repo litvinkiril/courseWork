@@ -3,6 +3,7 @@ package ru.livins.aeroboost.view;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -16,7 +17,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class GameBoardView extends View {
 
-    private Bitmap planeBitmap;
+    private Bitmap planeBitmap0;
+    private Bitmap planeBitmap90;
     private boolean planeVisible = false;
     private float planePosition = 0.0f;
 
@@ -41,7 +43,13 @@ public class GameBoardView extends View {
     {
         Drawable d = AppCompatResources.getDrawable(context, R.drawable.airplane001);
         if (d != null) {
-            planeBitmap = ((BitmapDrawable)d).getBitmap();
+            // Исходный вариант.
+            planeBitmap0 = ((BitmapDrawable)d).getBitmap();
+
+            // Повернутый вариант 90.
+            Matrix matrix = new Matrix();
+            matrix.postRotate(90);
+            planeBitmap90 = Bitmap.createBitmap(planeBitmap0, 0, 0, planeBitmap0.getWidth(), planeBitmap0.getHeight(), matrix, true);
         }
     }
 
@@ -55,14 +63,14 @@ public class GameBoardView extends View {
             var viewHeigth = getHeight();
 
             var planeMargin = 8;
-            var planeWidth = planeBitmap.getWidth();
-            var planeHeigth = planeBitmap.getHeight();
+            var planeWidth = planeBitmap90.getWidth();
+            var planeHeigth = planeBitmap90.getHeight();
 
             var planeX = viewWidth - planeWidth - planeMargin;
             var yOffset = (viewHeigth - 2*planeMargin - planeHeigth) * planePosition;
             var planeY = viewHeigth - planeMargin - yOffset - planeHeigth;
 
-            canvas.drawBitmap(planeBitmap, planeX, planeY, null);
+            canvas.drawBitmap(planeBitmap90, planeX, planeY, null);
         }
     }
 
