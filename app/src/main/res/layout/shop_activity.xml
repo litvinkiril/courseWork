@@ -35,7 +35,7 @@
             android:id="@+id/returnBoardButton"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:src="@drawable/bottom_shop"
+            android:src="@drawable/crossforshop"
             android:background="@null"
             android:contentDescription="crossReturnBoard"
             android:layout_alignParentRight="true"
