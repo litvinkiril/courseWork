@@ -5,23 +5,46 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/main_board"
-    tools:context=".SecondActivity">
+    tools:context="view.ShopActivity">
 
     <!-- Отступ сверху -->
     <View
         android:layout_width="match_parent"
         android:layout_height="30dp" />
 
-    <!-- Заголовок -->
-    <TextView
+    <!-- Заголовок с кнопкой -->
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="САМОЛЕТЫ"
-        android:textColor="#FFFFFF"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:gravity="center"
-        android:layout_marginBottom="30dp" />
+        android:layout_marginBottom="30dp"
+        android:paddingHorizontal="20dp">
+
+        <!-- Заголовок -->
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="САМОЛЕТЫ"
+            android:textColor="#FFFFFF"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:layout_centerHorizontal="true" />
+
+        <!-- Кнопка справа -->
+        <ImageButton
+            android:id="@+id/returnBoardButton"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/bottom_shop"
+            android:background="@null"
+            android:contentDescription="crossReturnBoard"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:foreground="?android:attr/selectableItemBackground"/>
+
+    </RelativeLayout>
 
     <!-- СПИСОК САМОЛЕТОВ - ШИРОКИЕ СТРОКИ -->
     <ListView

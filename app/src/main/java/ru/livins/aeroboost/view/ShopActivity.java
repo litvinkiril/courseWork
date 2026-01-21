@@ -3,6 +3,8 @@ package ru.livins.aeroboost.view;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ListView;
 
 import ru.livins.aeroboost.adapter.PlanesAdapter;
@@ -15,22 +17,35 @@ import ru.livins.aeroboost.R;
 public class ShopActivity extends AppCompatActivity
         implements PlanesAdapter.OnPlaneClickListener {
 
-    private static final String TAG = "SecondActivity";
+    private static final String TAG = "ShopActivity";
     private ListView listView;
     private PlanesAdapter adapter;
     private List<PlaneItem> planes = new ArrayList<>();
+    private ImageButton returnBoardButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shop_activity);
 
-        Log.d(TAG, "SecondActivity started");
+        Log.d(TAG, "ShopActivity started");
 
         // Находим ListView
         listView = findViewById(R.id.planesListView);
 
-        // Загружаем данные (сначала тестовые)
+        // Находим кнопку возврата
+        returnBoardButton = findViewById(R.id.returnBoardButton);
+
+        // Настраиваем обработчик клика для кнопки возврата
+        returnBoardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "Return button clicked - closing activity");
+                closeShopActivity();
+            }
+        });
+
+        // Загружаем данные
         loadTestPlanes();
 
         // Создаем адаптер
@@ -40,22 +55,27 @@ public class ShopActivity extends AppCompatActivity
         Log.d(TAG, "Adapter created with " + planes.size() + " items");
     }
 
+    // Метод для закрытия ShopActivity
+    private void closeShopActivity() {
+        Log.d(TAG, "Closing ShopActivity");
+        finish(); // Просто закрываем текущую активность
+    }
+
     // Тестовые данные
     private void loadTestPlanes() {
         planes.clear();
 
-        // Сначала протестируем с СУЩЕСТВУЮЩИМИ картинками
         String[] testImages = {
-                "coin",              // точно есть
-                "main_board",        // точно есть
-                "empty_place",       // точно есть
-                "coin",              // повтор
-                "main_board",
-                "empty_place",
-                "coin",
-                "main_board",
-                "empty_place",
-                "coin"
+                "plane1",
+                "plane2",
+                "plane3",
+                "plane4",
+                "plane5",
+                "plane6",
+                "plane7",
+                "plane8",
+                "plane9",
+                "plane10"
         };
 
         for (int i = 0; i < 10; i++) {
@@ -66,9 +86,8 @@ public class ShopActivity extends AppCompatActivity
             PlaneItem plane = new PlaneItem(
                     i,
                     "Plane " + (i + 1),
-                    testImages[i],  // используем СУЩЕСТВУЮЩИЕ картинки
+                    testImages[i],
                     price,
-                    max,
                     bought,
                     10 * (i + 1),
                     (10 * (i + 1)) * bought
@@ -84,5 +103,12 @@ public class ShopActivity extends AppCompatActivity
     public void onPlaneClick(int planeId) {
         Log.d(TAG, "Plane clicked: " + planeId);
         // ... остальной код
+    }
+
+    // Обработка кнопки "Назад" на устройстве - тоже закрываем ShopActivity
+    @Override
+    public void onBackPressed() {
+        Log.d(TAG, "Back button pressed - closing activity");
+        closeShopActivity();
     }
 }

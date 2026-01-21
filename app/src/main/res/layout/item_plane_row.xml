@@ -5,14 +5,14 @@
     android:layout_height="120dp"
     android:orientation="horizontal"
     android:background="#44000000"
-    android:padding="20dp" 
+    android:padding="20dp"
     android:layout_marginBottom="10dp"
     android:gravity="center_vertical">
 
-    <!-- ИЗОБРАЖЕНИЕ САМОЛЕТА (крупнее) -->
+    <!-- ИЗОБРАЖЕНИЕ САМОЛЕТА-->
     <ImageView
         android:id="@+id/planeImage"
-        android:layout_width="80dp" 
+        android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_marginEnd="20dp" />
 
@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical">
-        
+
         <!-- НАЗВАНИЕ -->
         <TextView
             android:id="@+id/planeName"
@@ -31,37 +31,38 @@
             android:textColor="#FFFFFF"
             android:textSize="22sp"
             android:textStyle="bold" />
-        
-        <!-- ПРОГРЕСС -->
+
+        <!-- C/S -->
         <TextView
-            android:id="@+id/planeProgress"
+            android:id="@+id/planeTotalCps"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#AAAAAA"
-            android:textSize="16sp"
+            android:textColor="#4CAF50"
+            android:textSize="18sp"
+            android:textStyle="bold"
             android:layout_marginTop="8dp" />
-            
+
     </LinearLayout>
 
-    <!-- ЦЕНА И C/S -->
+    <!-- ЦЕНА И КНОПКА -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center">
-        
+
         <!-- ЦЕНА -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center">
-            
+
             <ImageView
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:src="@drawable/coin" />
-            
+
             <TextView
                 android:id="@+id/planePrice"
                 android:layout_width="wrap_content"
@@ -72,16 +73,20 @@
                 android:layout_marginStart="8dp" />
         </LinearLayout>
 
-        <!-- C/S -->
-        <TextView
-            android:id="@+id/planeTotalCps"
+        <!-- ЖЕЛТАЯ КНОПКА BUY -->
+        <ImageButton
+            android:id="@+id/buyButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#4CAF50"
-            android:textSize="18sp"
-            android:textStyle="bold"
+            android:src="@drawable/buyShopBtn"
+            android:background="@null"
+            android:contentDescription="Buy button"
             android:layout_marginTop="12dp"
-            android:gravity="center" />
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:maxWidth="100dp"
+            android:maxHeight="40dp"
+            android:foreground="?android:attr/selectableItemBackground"/>
 
     </LinearLayout>
 

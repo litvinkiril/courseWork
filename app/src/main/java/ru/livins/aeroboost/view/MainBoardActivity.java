@@ -1,6 +1,8 @@
 package ru.livins.aeroboost.view;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +16,9 @@ public class MainBoardActivity extends AppCompatActivity {
 
     private final ImageView[][] cells = new ImageView[5][2];
     private final boolean[][] occupied = new boolean[5][2];
+    private ImageButton btnBuyPlane;
+
+    private ImageButton btnShop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +50,14 @@ public class MainBoardActivity extends AppCompatActivity {
                 });
             }
         }
+        btnBuyPlane = findViewById(R.id.btnBuyPlane);
+        btnShop = findViewById(R.id.btnShop);
+        btnShop.setOnClickListener(v -> {
+            Intent intent = new Intent(MainBoardActivity.this, ShopActivity.class);
+            startActivity(intent);
+        });
     }
+
 
     private void toggleCell(int row, int col) {
         occupied[row][col] = !occupied[row][col];

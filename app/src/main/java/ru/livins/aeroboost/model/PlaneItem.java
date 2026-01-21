@@ -5,20 +5,18 @@ public class PlaneItem {
     private String name;
     private String imageName;
     private int currentPrice;
-    private int maxPurchases;
     private int currentPurchased;
     private int cpsPerUnit;
     private int totalCps;
 
     // Конструктор (уже есть)
     public PlaneItem(int id, String name, String imageName,
-                     int currentPrice, int maxPurchases,
+                     int currentPrice,
                      int currentPurchased, int cpsPerUnit, int totalCps) {
         this.id = id;
         this.name = name;
         this.imageName = imageName;
         this.currentPrice = currentPrice;
-        this.maxPurchases = maxPurchases;
         this.currentPurchased = currentPurchased;
         this.cpsPerUnit = cpsPerUnit;
         this.totalCps = totalCps;
@@ -29,7 +27,6 @@ public class PlaneItem {
     public String getName() { return name; }
     public String getImageName() { return imageName; }
     public int getCurrentPrice() { return currentPrice; }
-    public int getMaxPurchases() { return maxPurchases; }
     public int getCurrentPurchased() { return currentPurchased; }
     public int getCpsPerUnit() { return cpsPerUnit; }
     public int getTotalCps() { return totalCps; }
@@ -49,11 +46,11 @@ public class PlaneItem {
 
     // Другие методы
     public boolean canBuyMore() {
-        return currentPurchased < maxPurchases;
+        return true;
     }
 
     public String getProgressText() {
-        return currentPurchased + "/" + maxPurchases;
+        return currentPurchased + "/" + "10";
     }
 
     public int getImageResId(android.content.Context context) {

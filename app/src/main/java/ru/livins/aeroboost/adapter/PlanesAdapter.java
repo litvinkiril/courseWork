@@ -43,7 +43,6 @@ public class PlanesAdapter extends ArrayAdapter<PlaneItem> {
         // Находим View
         ImageView planeImage = convertView.findViewById(R.id.planeImage);
         TextView planeName = convertView.findViewById(R.id.planeName);
-        TextView planeProgress = convertView.findViewById(R.id.planeProgress);
         TextView planePrice = convertView.findViewById(R.id.planePrice);
         TextView planeTotalCps = convertView.findViewById(R.id.planeTotalCps);
 
@@ -70,21 +69,8 @@ public class PlanesAdapter extends ArrayAdapter<PlaneItem> {
 
             // Основные данные
             planeName.setText(plane.getName());
-            planeProgress.setText(plane.getProgressText());
             planePrice.setText(String.valueOf(plane.getCurrentPrice()));
-            planeTotalCps.setText(plane.getTotalCps() + " C/S");
-
-            // Визуал в зависимости от статуса
-            if (plane.canBuyMore()) {
-                convertView.setAlpha(1.0f);
-                planePrice.setTextColor(0xFFFFD700); // золотой
-                planeTotalCps.setTextColor(0xFF4CAF50); // зеленый
-            } else {
-                convertView.setAlpha(0.6f);
-                planePrice.setTextColor(0xFF888888); // серый
-                planeTotalCps.setTextColor(0xFF888888);
-                planePrice.setText("MAX");
-            }
+            planeTotalCps.setText(plane.getCpsPerUnit() + " C/S");
         }
 
         // Обработка клика
