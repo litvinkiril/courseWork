@@ -8,7 +8,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import ru.livins.aeroboost.R;
-import ru.livins.aeroboost.viewmodel.StartGameData;
+import ru.livins.aeroboost.model.GameModel;
 
 public class StartActivity extends AppCompatActivity {
 
@@ -21,8 +21,8 @@ public class StartActivity extends AppCompatActivity {
     public void onStartGame(View view) {
         // Открыть окно игры.
         var startGameDataIntent = new Intent(this, MainBoardActivity.class);
-        var startGameData = new StartGameData("Andrej");
-        startGameDataIntent.putExtra(StartGameData.class.getSimpleName(), startGameData);
+        /*var startGameData = new GameModel("Andrej");
+        startGameDataIntent.putExtra(GameModel.class.getSimpleName(), startGameData);*/
         startActivity(startGameDataIntent);
     }
 

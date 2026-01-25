@@ -39,53 +39,54 @@ int calculateTotalCps(const Plane& plane) {
 }
 
 // Получить цену самолета
-extern "C" JNIEXPORT jint JNICALL
-Java_com_example_aeroboost_SecondActivity_getPlanePriceNative(
-        JNIEnv* env, jobject thiz, jint planeId) {
+extern "C"
+JNIEXPORT jint JNICALL
+Java_ru_livins_aeroboost_view_ShopActivity_getPlanePrice(JNIEnv *env, jclass clazz, jint plane_id) {
 
     // Проверяем что planeId в пределах массива
-    if (planeId < 0 || planeId >= planes.size()) {
+    if (plane_id < 0 || plane_id >= planes.size()) {
         return 0;
     }
 
     // Возвращаем текущую цену
-    return calculateCurrentPrice(planes[planeId]);
+    return calculateCurrentPrice(planes[plane_id]);
 }
 
 // Получить количество купленных
-extern "C" JNIEXPORT jint JNICALL
-Java_com_example_aeroboost_SecondActivity_getPlanePurchasedNative(
-        JNIEnv* env, jobject thiz, jint planeId) {
+extern "C"
+JNIEXPORT jint JNICALL
+Java_ru_livins_aeroboost_view_ShopActivity_getPlanePurchased(JNIEnv *env, jclass clazz, jint plane_id) {
 
-    if (planeId < 0 || planeId >= planes.size()) {
+    if (plane_id < 0 || plane_id >= planes.size()) {
         return 0;
     }
 
-    return planes[planeId].currentPurchased;
+    return planes[plane_id].currentPurchased;
 }
 
-// Получить общий C/S
-extern "C" JNIEXPORT jint JNICALL
-Java_com_example_aeroboost_SecondActivity_getPlaneTotalCpsNative(
-        JNIEnv* env, jobject thiz, jint planeId) {
 
-    if (planeId < 0 || planeId >= planes.size()) {
+// Получить общий C/S
+extern "C"
+JNIEXPORT jint JNICALL
+Java_ru_livins_aeroboost_view_ShopActivity_getPlaneTotalCps(JNIEnv *env, jclass clazz, jint plane_id) {
+
+    if (plane_id < 0 || plane_id >= planes.size()) {
         return 0;
     }
 
-    return calculateTotalCps(planes[planeId]);
+    return calculateTotalCps(planes[plane_id]);
 }
 
 // Попытаться купить
-extern "C" JNIEXPORT jboolean JNICALL
-Java_com_example_aeroboost_SecondActivity_tryBuyPlaneNative(
-        JNIEnv* env, jobject thiz, jint planeId) {
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_ru_livins_aeroboost_view_ShopActivity_tryBuyPlane(JNIEnv *env, jclass clazz, jint plane_id) {
 
-    if (planeId < 0 || planeId >= planes.size()) {
+    if (plane_id < 0 || plane_id >= planes.size()) {
         return false;
     }
 
-    Plane& plane = planes[planeId];
+    Plane& plane = planes[plane_id];
 
     // Проверяем хватает ли денег
     int price = calculateCurrentPrice(plane);
@@ -96,4 +97,25 @@ Java_com_example_aeroboost_SecondActivity_tryBuyPlaneNative(
     //}
 
     return false;
+}
+
+extern "C"
+JNIEXPORT jobject JNICALL
+Java_ru_livins_aeroboost_model_GameModel_doGameStep(JNIEnv *env, jclass clazz, jobject prev_state) {
+
+    jclass gameStateClass = env->GetObjectClass(prev_state);
+    jobject new_state = env->AllocObject(gameStateClass);
+
+    jfieldID userNameField = env->GetFieldID(gameStateClass , "userName", "Ljava/lang/String;");
+    jfieldID totalProfitRateField = env->GetFieldID(gameStateClass , "totalProfitRate", "D");
+    jfieldID totalCoinsField = env->GetFieldID(gameStateClass , "totalCoins", "D");
+
+    (*env).SetObjectField(new_state, userNameField, env->GetObjectField(prev_state, userNameField));
+    jdouble profitRate = env->GetDoubleField(prev_state, totalProfitRateField);
+    jdouble totalCoins = env->GetDoubleField(prev_state, totalCoinsField);
+    jdouble newCoins = totalCoins + profitRate;
+    env->SetDoubleField(new_state, totalProfitRateField, profitRate);
+    env->SetDoubleField(new_state, totalCoinsField, newCoins);
+
+    return new_state;
 }

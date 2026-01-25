@@ -8,6 +8,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 
 import ru.livins.aeroboost.adapter.PlanesAdapter;
+import ru.livins.aeroboost.model.GameState;
 import ru.livins.aeroboost.model.PlaneItem;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,14 @@ import ru.livins.aeroboost.R;
 
 public class ShopActivity extends AppCompatActivity
         implements PlanesAdapter.OnPlaneClickListener {
+
+    // todo - сделать viewmodel
+    // todo - заменить на получение структур, а не по одиночке
+    // Методы для обращения в ядро.
+    private static native int getPlanePrice(int planeId);
+    private static native int getPlanePurchased(int planeId);
+    private static native int getPlaneTotalCps(int planeId);
+    private static native boolean tryBuyPlane(int planeId);
 
     private static final String TAG = "ShopActivity";
     private ListView listView;

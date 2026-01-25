@@ -14,7 +14,52 @@
     </ru.livins.aeroboost.view.GameBoardView>
 
     <LinearLayout
-        android:id="@+id/topPanel"
+        android:id="@+id/userPanel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:gravity="center" >
+
+        <ImageView
+            android:id="@+id/userIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/user"
+            android:layout_marginEnd="12dp" />
+
+        <TextView
+            android:id="@+id/userName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mr. User"
+            android:textColor="#FFD700"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="48dp" />
+
+        <TextView
+            android:id="@+id/totalProfitRate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:textColor="#FFD700"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/perSecond"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="/сек"
+            android:textColor="#FFD700"
+            android:textSize="16sp"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/gameCountPanel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -25,28 +70,19 @@
 
         <ImageView
             android:id="@+id/coinIcon"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:src="@drawable/coin"
-            android:layout_marginEnd="12dp" />
+            android:layout_marginEnd="8dp" />
 
         <TextView
-            android:id="@+id/coinCounter"
+            android:id="@+id/totalCoins"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="100"
             android:textColor="#FFD700"
-            android:textSize="22sp"
+            android:textSize="28sp"
             android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/coinPerSec"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="/сек"
-            android:textColor="#FFD700"
-            android:textSize="16sp"
-            android:layout_marginStart="6dp" />
     </LinearLayout>
 
     <LinearLayout

@@ -4,26 +4,36 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
 import ru.livins.aeroboost.R;
+import ru.livins.aeroboost.viewmodel.MainBoardViewModel;
 
 public class MainBoardActivity extends AppCompatActivity {
 
-    static {
-        System.loadLibrary("aeroboost-core");
-    }
+    // Элементы на форме.
+    private TextView userNameTextView;
+    private TextView totalProfitRateTextView;
+    private TextView totalCoinsTextView;
 
     private final ImageView[][] cells = new ImageView[5][2];
     private final boolean[][] occupied = new boolean[5][2];
-    private ImageButton btnBuyPlane;
 
+    private ImageButton btnBuyPlane;
     private ImageButton btnShop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_board_activity);
+
+        // Статус игры.
+        userNameTextView = findViewById(R.id.userName);
+        totalProfitRateTextView = findViewById(R.id.totalProfitRate);
+        totalCoinsTextView = findViewById(R.id.totalCoins);
 
         // Находим ВСЕ 10 ячеек
         cells[0][0] = findViewById(R.id.cell_0_0);
@@ -50,11 +60,32 @@ public class MainBoardActivity extends AppCompatActivity {
                 });
             }
         }
+
+        // Кнопки.
         btnBuyPlane = findViewById(R.id.btnBuyPlane);
+
         btnShop = findViewById(R.id.btnShop);
         btnShop.setOnClickListener(v -> {
             Intent intent = new Intent(MainBoardActivity.this, ShopActivity.class);
             startActivity(intent);
+        });
+
+        // Привязываем ViewModel.
+        var viewModelProvider = new ViewModelProvider(this);
+        var viewModel = viewModelProvider.get(MainBoardViewModel.class);
+
+        viewModel.getUserName().observe(this, value -> {
+            userNameTextView.setText(value);
+        });
+
+        viewModel.getTotalProfitRate().observe(this, value -> {
+            var roundedValue = Math.round(value);
+            totalProfitRateTextView.setText(String.valueOf(roundedValue));
+        });
+
+        viewModel.getTotalCoins().observe(this, value -> {
+            var roundedValue = Math.round(value);
+            totalCoinsTextView.setText(String.valueOf(roundedValue));
         });
     }
 
