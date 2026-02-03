@@ -13,6 +13,9 @@ import ru.livins.aeroboost.model.PlaneItem;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.livins.aeroboost.model.GameModel;
+import ru.livins.aeroboost.model.GameState;
+
 import ru.livins.aeroboost.R;
 
 public class ShopActivity extends AppCompatActivity
@@ -22,12 +25,13 @@ public class ShopActivity extends AppCompatActivity
     private static native int getPlanePrice(int planeId);
     private static native int getPlanePurchased(int planeId);
     private static native int getPlaneTotalCps(int planeId);
-    private static native boolean tryBuyPlane(int planeId);
+    private static native double tryBuyPlane(int planeId, double currentBalance);
     private static native String getPlaneName(int planeId);
     private static native String getPlaneImageName(int planeId);
     private static native int getPlaneCpsPerUnit(int planeId);
     private static native int getTotalPlanesCount();
 
+    private GameModel gameModel;
     private static final String TAG = "ShopActivity";
     private ListView listView;
     private PlanesAdapter adapter;
@@ -40,6 +44,8 @@ public class ShopActivity extends AppCompatActivity
         setContentView(R.layout.shop_activity);
 
         Log.d(TAG, "ShopActivity started");
+
+        gameModel = GameModel.getInstance();
 
         listView = findViewById(R.id.planesListView);
         returnBoardButton = findViewById(R.id.returnBoardButton);
@@ -107,15 +113,17 @@ public class ShopActivity extends AppCompatActivity
     public void onPlaneClick(int planeId) {
         Log.d(TAG, "Кнопка BUY нажата для самолета: " + planeId);
 
-        // Всегда можно купить (временно)
-        boolean success = true;
+        GameState currentState = gameModel.gameStateObservable.getState();
+        double currentBalance = currentState.getTotalCoins();
+        double result = tryBuyPlane(planeId, currentBalance);
 
-        if (success) {
+        if (result >= 0) {
             Toast.makeText(this, "Самолет куплен!", Toast.LENGTH_SHORT).show();
-            tryBuyPlane(planeId);
-            // Обновляем данные этого самолета
+            currentState.setTotalCoins(result);
             updatePlaneData(planeId);
             adapter.notifyDataSetChanged();
+        } else {
+            Toast.makeText(this, "Недостаточно средств!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -134,10 +142,5 @@ public class ShopActivity extends AppCompatActivity
             plane.setCurrentPurchased(newPurchased);
             plane.setTotalCps(newTotalCps);
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        finish();
     }
 }

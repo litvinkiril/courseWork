@@ -37,6 +37,7 @@ int calculateCurrentPrice(const Plane& plane) {
 int calculateTotalCps(const Plane& plane) {
     return plane.cpsPerUnit;
 }
+
 // получить количество самолетов
 extern "C"
 JNIEXPORT jint JNICALL
@@ -114,24 +115,28 @@ Java_ru_livins_aeroboost_view_ShopActivity_getPlaneTotalCps(JNIEnv *env, jclass 
 }
 
 extern "C"
-JNIEXPORT jboolean JNICALL
+JNIEXPORT jdouble JNICALL
 Java_ru_livins_aeroboost_view_ShopActivity_tryBuyPlane(
         JNIEnv *env,
         jclass clazz,
-        jint plane_id
+        jint plane_id,
+        jdouble currentBalance
 ) {
     if (plane_id < 0 || plane_id >= planes.size()) {
-        return JNI_FALSE;
+        return -1.0;
     }
 
     Plane& plane = planes[plane_id];
-
-    // Рассчитываем текущую цену
     int price = calculateCurrentPrice(plane);
-    plane.currentPurchased++;
-    return JNI_TRUE;
-    // }
-    // return JNI_FALSE;
+
+    // Если денег хватает
+    if (currentBalance >= price) {
+        plane.currentPurchased++;
+        jdouble newBalance = currentBalance - price;
+        return newBalance;
+    }
+
+    return -1.0;
 }
 
 extern "C"

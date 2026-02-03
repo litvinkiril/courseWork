@@ -24,7 +24,7 @@ public class GameModel {
         // но сейчас просто вот так
         var initialState = new GameState();
         initialState.setUserName("Andrej");
-        initialState.setTotalProfitRate(1.1);
+        initialState.setTotalProfitRate(1);
 
         theInstance = new GameModel(initialState);
         return theInstance;
