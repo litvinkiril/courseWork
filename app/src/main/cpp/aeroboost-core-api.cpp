@@ -37,6 +37,34 @@ int calculateCurrentPrice(const Plane& plane) {
 int calculateTotalCps(const Plane& plane) {
     return plane.cpsPerUnit;
 }
+// получить количество самолетов
+extern "C"
+JNIEXPORT jint JNICALL
+Java_ru_livins_aeroboost_view_ShopActivity_getTotalPlanesCount(JNIEnv *env, jclass clazz) {
+    return static_cast<jint>(planes.size());
+}
+
+// Получить имя самолета
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_ru_livins_aeroboost_view_ShopActivity_getPlaneName(JNIEnv *env, jclass clazz, jint plane_id) {
+    if (plane_id < 0 || plane_id >= planes.size()) {
+        return env->NewStringUTF("Unknown");
+    }
+    return env->NewStringUTF(planes[plane_id].name);
+}
+
+// Получить имя картинки
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_ru_livins_aeroboost_view_ShopActivity_getPlaneImageName(JNIEnv *env, jclass clazz, jint plane_id) {
+    if (plane_id < 0 || plane_id >= planes.size()) {
+        return env->NewStringUTF("plane1");
+    }
+    return env->NewStringUTF(planes[plane_id].imageName);
+}
+
+
 
 // Получить цену самолета
 extern "C"
@@ -65,16 +93,24 @@ Java_ru_livins_aeroboost_view_ShopActivity_getPlanePurchased(JNIEnv *env, jclass
 }
 
 
+// Получить C/S за единицу
+extern "C"
+JNIEXPORT jint JNICALL
+Java_ru_livins_aeroboost_view_ShopActivity_getPlaneCpsPerUnit(JNIEnv *env, jclass clazz, jint plane_id) {
+    if (plane_id < 0 || plane_id >= planes.size()) {
+        return 0;
+    }
+    return static_cast<jint>(planes[plane_id].cpsPerUnit);
+}
+
 // Получить общий C/S
 extern "C"
 JNIEXPORT jint JNICALL
 Java_ru_livins_aeroboost_view_ShopActivity_getPlaneTotalCps(JNIEnv *env, jclass clazz, jint plane_id) {
-
     if (plane_id < 0 || plane_id >= planes.size()) {
         return 0;
     }
-
-    return calculateTotalCps(planes[plane_id]);
+    return static_cast<jint>(calculateTotalCps(planes[plane_id]));
 }
 
 // Попытаться купить

@@ -49,9 +49,6 @@ public class PlaneItem {
         return true;
     }
 
-    public String getProgressText() {
-        return currentPurchased + "/" + "10";
-    }
 
     public int getImageResId(android.content.Context context) {
         return context.getResources().getIdentifier(
