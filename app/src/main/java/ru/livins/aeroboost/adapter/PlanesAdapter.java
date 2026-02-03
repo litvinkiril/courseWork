@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 import ru.livins.aeroboost.R;
 import ru.livins.aeroboost.model.PlaneItem;
 import java.util.List;
-
+import android.widget.Button;
 public class PlanesAdapter extends ArrayAdapter<PlaneItem> {
 
     // Интерфейс для обработки кликов
@@ -27,10 +27,11 @@ public class PlanesAdapter extends ArrayAdapter<PlaneItem> {
         this.clickListener = listener;
     }
 
+
+
     @NonNull
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-
         // Получаем данные самолета
         PlaneItem plane = getItem(position);
 
@@ -40,46 +41,41 @@ public class PlanesAdapter extends ArrayAdapter<PlaneItem> {
                     .inflate(R.layout.item_plane_row, parent, false);
         }
 
-        // Находим View
+        // Находим View КАЖДЫЙ РАЗ (без holder)
         ImageView planeImage = convertView.findViewById(R.id.planeImage);
         TextView planeName = convertView.findViewById(R.id.planeName);
         TextView planePrice = convertView.findViewById(R.id.planePrice);
         TextView planeTotalCps = convertView.findViewById(R.id.planeTotalCps);
+        Button buyButton = convertView.findViewById(R.id.buyButton);
 
         // Заполняем данными
         if (plane != null) {
-            // ЛОГИРОВАНИЕ для отладки
-            Log.d("PlanesAdapter",
-                    "Position: " + position +
-                            ", Name: " + plane.getName() +
-                            ", ImageName: " + plane.getImageName());
-
             // Устанавливаем картинку
             int imageResId = getImageResId(plane.getImageName());
-            Log.d("PlanesAdapter", "ImageResId: " + imageResId);
 
             if (imageResId != 0) {
                 planeImage.setImageResource(imageResId);
             } else {
-                // Если картинка не найдена - ставим цвет
                 planeImage.setBackgroundColor(0xFF666666);
                 planeImage.setImageResource(android.R.drawable.ic_menu_report_image);
-                Log.e("PlanesAdapter", "Image NOT FOUND: " + plane.getImageName());
             }
 
             // Основные данные
             planeName.setText(plane.getName());
             planePrice.setText(String.valueOf(plane.getCurrentPrice()));
-            planeTotalCps.setText(plane.getCpsPerUnit() + " C/S");
-        }
+            planeTotalCps.setText(plane.getTotalCps() + " C/S");
 
-        // Обработка клика
-        final int planeId = plane != null ? plane.getId() : -1;
-        convertView.setOnClickListener(v -> {
-            if (clickListener != null && planeId != -1) {
-                clickListener.onPlaneClick(planeId);
-            }
-        });
+            // КЛЮЧЕВОЕ: Вешаем обработчик на КНОПКУ BUY
+            buyButton.setOnClickListener(v -> {
+                if (clickListener != null) {
+                    clickListener.onPlaneClick(plane.getId());
+                    Log.d("PlanesAdapter", "Кнопка BUY нажата для самолета ID: " + plane.getId());
+                }
+            });
+
+            // Убираем клик с всей строки
+            convertView.setOnClickListener(null);
+        }
 
         return convertView;
     }

@@ -43,13 +43,6 @@ public class PlaneItem {
     public void setTotalCps(int cps) {
         this.totalCps = cps;
     }
-
-    // Другие методы
-    public boolean canBuyMore() {
-        return true;
-    }
-
-
     public int getImageResId(android.content.Context context) {
         return context.getResources().getIdentifier(
                 imageName, "drawable", context.getPackageName()

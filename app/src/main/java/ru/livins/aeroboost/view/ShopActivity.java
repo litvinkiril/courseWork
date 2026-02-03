@@ -105,17 +105,17 @@ public class ShopActivity extends AppCompatActivity
     // Обработка клика по самолету - покупка
     @Override
     public void onPlaneClick(int planeId) {
-        Log.d(TAG, "Attempting to buy plane: " + planeId);
+        Log.d(TAG, "Кнопка BUY нажата для самолета: " + planeId);
 
-        boolean success = tryBuyPlane(planeId);
+        // Всегда можно купить (временно)
+        boolean success = true;
 
         if (success) {
             Toast.makeText(this, "Самолет куплен!", Toast.LENGTH_SHORT).show();
+
             // Обновляем данные этого самолета
             updatePlaneData(planeId);
             adapter.notifyDataSetChanged();
-        } else {
-            Toast.makeText(this, "Недостаточно средств!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -131,7 +131,7 @@ public class ShopActivity extends AppCompatActivity
 
             // Обновляем объект
             plane.setCurrentPrice(newPrice);
-            plane.setCurrentPurchased(newPurchased);
+            plane.setCurrentPurchased(newPurchased + 1);
             plane.setTotalCps(newTotalCps);
         }
     }
