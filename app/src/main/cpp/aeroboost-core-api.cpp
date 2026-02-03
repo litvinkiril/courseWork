@@ -113,26 +113,25 @@ Java_ru_livins_aeroboost_view_ShopActivity_getPlaneTotalCps(JNIEnv *env, jclass 
     return static_cast<jint>(calculateTotalCps(planes[plane_id]));
 }
 
-// Попытаться купить
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_ru_livins_aeroboost_view_ShopActivity_tryBuyPlane(JNIEnv *env, jclass clazz, jint plane_id) {
-
+Java_ru_livins_aeroboost_view_ShopActivity_tryBuyPlane(
+        JNIEnv *env,
+        jclass clazz,
+        jint plane_id
+) {
     if (plane_id < 0 || plane_id >= planes.size()) {
-        return false;
+        return JNI_FALSE;
     }
 
     Plane& plane = planes[plane_id];
 
-    // Проверяем хватает ли денег
+    // Рассчитываем текущую цену
     int price = calculateCurrentPrice(plane);
-    //if (coinCount >= price) {
-    //    coinCount -= price;
-    //    plane.currentPurchased++;
-    //    return true;
-    //}
-
-    return false;
+    plane.currentPurchased++;
+    return JNI_TRUE;
+    // }
+    // return JNI_FALSE;
 }
 
 extern "C"

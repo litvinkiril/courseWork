@@ -65,7 +65,7 @@ public class PlanesAdapter extends ArrayAdapter<PlaneItem> {
             planePrice.setText(String.valueOf(plane.getCurrentPrice()));
             planeTotalCps.setText(plane.getTotalCps() + " C/S");
 
-            // КЛЮЧЕВОЕ: Вешаем обработчик на КНОПКУ BUY
+            // Обработчик на КНОПКУ BUY
             buyButton.setOnClickListener(v -> {
                 if (clickListener != null) {
                     clickListener.onPlaneClick(plane.getId());

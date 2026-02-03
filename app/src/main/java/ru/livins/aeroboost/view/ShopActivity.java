@@ -112,7 +112,7 @@ public class ShopActivity extends AppCompatActivity
 
         if (success) {
             Toast.makeText(this, "Самолет куплен!", Toast.LENGTH_SHORT).show();
-
+            tryBuyPlane(planeId);
             // Обновляем данные этого самолета
             updatePlaneData(planeId);
             adapter.notifyDataSetChanged();
@@ -131,7 +131,7 @@ public class ShopActivity extends AppCompatActivity
 
             // Обновляем объект
             plane.setCurrentPrice(newPrice);
-            plane.setCurrentPurchased(newPurchased + 1);
+            plane.setCurrentPurchased(newPurchased);
             plane.setTotalCps(newTotalCps);
         }
     }
