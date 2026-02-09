@@ -15,6 +15,8 @@ import java.util.List;
 import android.widget.Button;
 public class PlanesAdapter extends ArrayAdapter<PlaneItem> {
 
+    private static native boolean opened(int planeId);
+
     // Интерфейс для обработки кликов
     public interface OnPlaneClickListener {
         void onPlaneClick(int planeId);
@@ -49,9 +51,16 @@ public class PlanesAdapter extends ArrayAdapter<PlaneItem> {
         Button buyButton = convertView.findViewById(R.id.buyButton);
 
         // Заполняем данными
+
         if (plane != null) {
             // Устанавливаем картинку
-            int imageResId = getImageResId(plane.getImageName());
+            int imageResId;
+            if (opened(plane.getId())) {
+                imageResId = getImageResId(plane.getImageName());
+            }
+            else {
+                imageResId = getImageResId(plane.getBlockImageName());
+            }
 
             if (imageResId != 0) {
                 planeImage.setImageResource(imageResId);

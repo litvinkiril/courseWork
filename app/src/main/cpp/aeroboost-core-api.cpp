@@ -11,21 +11,22 @@ struct Plane {
     int pricePerUnit;           // цена за каждый купленный
     int currentPurchased;       // сколько уже куплено
     int cpsPerUnit;             // C/S за один самолет
+    const char* blockImageName;
 };
 
 // База данных самолетов
 std::vector<Plane> planes = {
         // id, name,      image,    base, price/ед., макс, куплено, C/S за ед.
-        {0, "Plane 1",   "plane1",  50,   10,   0,   1},
-        {1, "Plane 2",   "plane2",  200,  50,  0,   5},
-        {2, "Plane 3",   "plane3",  500,  100,   0,   15},
-        {3, "Plane 4",   "plane4",  1000, 250, 0,   40},
-        {4, "Plane 5",   "plane5",  2500, 500, 0,   100},
-        {5, "Plane 6",   "plane6",  5000, 1000, 0,   250},
-        {6, "Plane 7",   "plane7",  10000,2000, 0,   600},
-        {7, "Plane 8",   "plane8",  25000,5000, 0,   1500},
-        {8, "Plane 9",   "plane9",  50000,10000, 0,   4000},
-        {9, "Plane 10",  "plane10", 100000,25000, 0,   10000}
+        {0, "1. Stipa",   "plane1",  50,   10,   0,   1, "airplane001"},
+        {1, "2. SuperMarin",   "plane2",  200,  50,  0,   5, "airplane001"},
+        {2, "3. Mikoy",   "plane3",  500,  100,   0,   15, "airplane001"},
+        {3, "4. Yako",   "plane4",  1000, 250, 0,   40, "airplane001"},
+        {4, "5. Voughtent",   "plane5",  2500, 500, 0,   100, "airplane001"},
+        {5, "6. Bufaloo",   "plane6",  5000, 1000, 0,   250, "airplane001"},
+        {6, "7. Brew",   "plane7",  10000,2000, 0,   600, "airplane001"},
+        {7, "8. Gruman",   "plane8",  25000,5000, 0,   1500, "airplane001"},
+        {8, "9. Flyer-1",   "plane9",  50000,10000, 0,   4000, "airplane001"},
+        {9, "10. Flyer-2",  "plane10", 100000,25000, 0,   10000, "airplane001"}
 };
 
 // Рассчитать текущую цену для самолета
@@ -65,7 +66,15 @@ Java_ru_livins_aeroboost_view_ShopActivity_getPlaneImageName(JNIEnv *env, jclass
     return env->NewStringUTF(planes[plane_id].imageName);
 }
 
-
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_ru_livins_aeroboost_view_ShopActivity_getPlaneBlockImageName(JNIEnv *env, jclass clazz,
+                                                                  jint plane_id) {
+    if (plane_id < 0 || plane_id >= planes.size()) {
+        return env->NewStringUTF("plane1");
+    }
+    return env->NewStringUTF(planes[plane_id].blockImageName);
+}
 
 // Получить цену самолета
 extern "C"
@@ -158,4 +167,18 @@ Java_ru_livins_aeroboost_model_GameModel_doGameStep(JNIEnv *env, jclass clazz, j
     env->SetDoubleField(new_state, totalCoinsField, newCoins);
 
     return new_state;
+}
+
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_ru_livins_aeroboost_adapter_PlanesAdapter_opened(JNIEnv *env, jclass clazz, jint plane_id) {
+    if (plane_id <  3) {
+        return true;
+    }
+    if (planes[plane_id - 1].currentPurchased > 0) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }

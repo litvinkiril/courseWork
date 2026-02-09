@@ -30,6 +30,7 @@ public class ShopActivity extends AppCompatActivity
     private static native String getPlaneImageName(int planeId);
     private static native int getPlaneCpsPerUnit(int planeId);
     private static native int getTotalPlanesCount();
+    private static native String getPlaneBlockImageName(int planeId);
 
     private GameModel gameModel;
     private static final String TAG = "ShopActivity";
@@ -84,6 +85,7 @@ public class ShopActivity extends AppCompatActivity
                 int currentPurchased = getPlanePurchased(i);
                 int cpsPerUnit = getPlaneCpsPerUnit(i);
                 int totalCps = getPlaneTotalCps(i);
+                String blockImageName = getPlaneBlockImageName(i);
 
                 Log.d(TAG, String.format(
                         "Plane %d: name=%s, image=%s, price=%d, purchased=%d, cpsPerUnit=%d, totalCps=%d",
@@ -98,7 +100,8 @@ public class ShopActivity extends AppCompatActivity
                         currentPrice,
                         currentPurchased,
                         cpsPerUnit,
-                        totalCps
+                        totalCps,
+                        blockImageName
                 );
 
                 planes.add(plane);
@@ -115,6 +118,10 @@ public class ShopActivity extends AppCompatActivity
 
         GameState currentState = gameModel.gameStateObservable.getState();
         double currentBalance = currentState.getTotalCoins();
+        if (planeId >= 3 && getPlanePurchased(planeId - 1) == 0) {
+            Toast.makeText(this, "Откройте предыдущий самолет!", Toast.LENGTH_SHORT).show();
+            return;
+        }
         double result = tryBuyPlane(planeId, currentBalance);
 
         if (result >= 0) {
@@ -136,7 +143,6 @@ public class ShopActivity extends AppCompatActivity
             int newPrice = getPlanePrice(planeId);
             int newPurchased = getPlanePurchased(planeId);
             int newTotalCps = getPlaneTotalCps(planeId);
-
             // Обновляем объект
             plane.setCurrentPrice(newPrice);
             plane.setCurrentPurchased(newPurchased);

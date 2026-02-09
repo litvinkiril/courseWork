@@ -9,10 +9,12 @@ public class PlaneItem {
     private int cpsPerUnit;
     private int totalCps;
 
+    private String  blockImageName;
+
     // Конструктор (уже есть)
     public PlaneItem(int id, String name, String imageName,
                      int currentPrice,
-                     int currentPurchased, int cpsPerUnit, int totalCps) {
+                     int currentPurchased, int cpsPerUnit, int totalCps, String blockImageName) {
         this.id = id;
         this.name = name;
         this.imageName = imageName;
@@ -20,12 +22,18 @@ public class PlaneItem {
         this.currentPurchased = currentPurchased;
         this.cpsPerUnit = cpsPerUnit;
         this.totalCps = totalCps;
+        this.blockImageName = blockImageName;
     }
 
     // === ГЕТТЕРЫ (должны быть) ===
     public int getId() { return id; }
     public String getName() { return name; }
     public String getImageName() { return imageName; }
+
+    public String getBlockImageName() {
+        return blockImageName;
+    }
+
     public int getCurrentPrice() { return currentPrice; }
     public int getCurrentPurchased() { return currentPurchased; }
     public int getCpsPerUnit() { return cpsPerUnit; }
@@ -43,9 +51,5 @@ public class PlaneItem {
     public void setTotalCps(int cps) {
         this.totalCps = cps;
     }
-    public int getImageResId(android.content.Context context) {
-        return context.getResources().getIdentifier(
-                imageName, "drawable", context.getPackageName()
-        );
-    }
+
 }
