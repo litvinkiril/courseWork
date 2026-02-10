@@ -1,15 +1,14 @@
 package ru.livins.aeroboost.model;
 
 public class PlaneItem {
-    private int id;
-    private String name;
-    private String imageName;
+    private final int id;
+    private final String name;
+    private final String imageName;
     private int currentPrice;
     private int currentPurchased;
-    private int cpsPerUnit;
+    private final int cpsPerUnit;
     private int totalCps;
-
-    private String  blockImageName;
+    private final String  blockImageName;
 
     // Конструктор (уже есть)
     public PlaneItem(int id, String name, String imageName,

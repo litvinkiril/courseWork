@@ -49,6 +49,7 @@ public class PlanesAdapter extends ArrayAdapter<PlaneItem> {
         TextView planePrice = convertView.findViewById(R.id.planePrice);
         TextView planeTotalCps = convertView.findViewById(R.id.planeTotalCps);
         Button buyButton = convertView.findViewById(R.id.buyButton);
+        assert plane != null;
         updateButtonState(buyButton, plane.getId());
         // Заполняем данными
         // Устанавливаем картинку
@@ -70,6 +71,7 @@ public class PlanesAdapter extends ArrayAdapter<PlaneItem> {
         // Основные данные
         planeName.setText(plane.getName());
         planePrice.setText(String.valueOf(plane.getCurrentPrice()));
+
         planeTotalCps.setText(plane.getTotalCps() + " C/S");
 
         // Обработчик на КНОПКУ BUY
@@ -106,13 +108,11 @@ public class PlanesAdapter extends ArrayAdapter<PlaneItem> {
 
             Log.d("PlanesAdapter", "Looking for image: " + cleanName);
 
-            int resId = getContext().getResources().getIdentifier(
+            return getContext().getResources().getIdentifier(
                     cleanName,         // имя файла БЕЗ расширения
                     "drawable",        // тип ресурса
                     getContext().getPackageName()
             );
-
-            return resId;
         } catch (Exception e) {
             Log.e("PlanesAdapter", "Error loading image: " + imageName, e);
             return 0;
