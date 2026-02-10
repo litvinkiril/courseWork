@@ -3,6 +3,7 @@ package ru.livins.aeroboost.adapter;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -36,7 +37,6 @@ public class PlanesAdapter extends ArrayAdapter<PlaneItem> {
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         // Получаем данные самолета
         PlaneItem plane = getItem(position);
-
         // Создаем View если его нет
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext())
@@ -49,42 +49,39 @@ public class PlanesAdapter extends ArrayAdapter<PlaneItem> {
         TextView planePrice = convertView.findViewById(R.id.planePrice);
         TextView planeTotalCps = convertView.findViewById(R.id.planeTotalCps);
         Button buyButton = convertView.findViewById(R.id.buyButton);
-
+        updateButtonState(buyButton, plane.getId());
         // Заполняем данными
-
-        if (plane != null) {
-            // Устанавливаем картинку
-            int imageResId;
-            if (opened(plane.getId())) {
-                imageResId = getImageResId(plane.getImageName());
-            }
-            else {
-                imageResId = getImageResId(plane.getBlockImageName());
-            }
-
-            if (imageResId != 0) {
-                planeImage.setImageResource(imageResId);
-            } else {
-                planeImage.setBackgroundColor(0xFF666666);
-                planeImage.setImageResource(android.R.drawable.ic_menu_report_image);
-            }
-
-            // Основные данные
-            planeName.setText(plane.getName());
-            planePrice.setText(String.valueOf(plane.getCurrentPrice()));
-            planeTotalCps.setText(plane.getTotalCps() + " C/S");
-
-            // Обработчик на КНОПКУ BUY
-            buyButton.setOnClickListener(v -> {
-                if (clickListener != null) {
-                    clickListener.onPlaneClick(plane.getId());
-                    Log.d("PlanesAdapter", "Кнопка BUY нажата для самолета ID: " + plane.getId());
-                }
-            });
-
-            // Убираем клик с всей строки
-            convertView.setOnClickListener(null);
+        // Устанавливаем картинку
+        int imageResId;
+        if (opened(plane.getId())) {
+            imageResId = getImageResId(plane.getImageName());
         }
+        else {
+            imageResId = getImageResId(plane.getBlockImageName());
+        }
+
+        if (imageResId != 0) {
+            planeImage.setImageResource(imageResId);
+        } else {
+            planeImage.setBackgroundColor(0xFF666666);
+            planeImage.setImageResource(android.R.drawable.ic_menu_report_image);
+        }
+
+        // Основные данные
+        planeName.setText(plane.getName());
+        planePrice.setText(String.valueOf(plane.getCurrentPrice()));
+        planeTotalCps.setText(plane.getTotalCps() + " C/S");
+
+        // Обработчик на КНОПКУ BUY
+        buyButton.setOnClickListener(v -> {
+            if (clickListener != null) {
+                clickListener.onPlaneClick(plane.getId());
+                Log.d("PlanesAdapter", "Кнопка BUY нажата для самолета ID: " + plane.getId());
+            }
+        });
+
+        // Убираем клик с всей строки
+        convertView.setOnClickListener(null);
 
         return convertView;
     }
@@ -119,6 +116,16 @@ public class PlanesAdapter extends ArrayAdapter<PlaneItem> {
         } catch (Exception e) {
             Log.e("PlanesAdapter", "Error loading image: " + imageName, e);
             return 0;
+        }
+    }
+    private void updateButtonState(Button button, int planeId) {
+        if (opened(planeId)) {
+            button.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                    Color.parseColor("#FFD700")));
+        }
+        else {
+            button.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+                    Color.parseColor("#808080")));
         }
     }
 }
