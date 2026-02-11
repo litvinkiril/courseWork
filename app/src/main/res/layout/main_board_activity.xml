@@ -90,10 +90,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="10dp"
         android:orientation="horizontal"
         android:gravity="center"
-        android:padding="10dp">
+        android:padding="20dp">
 
         <ImageButton
             android:id="@+id/btnBuyPlane"
@@ -116,97 +116,17 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/gameTable"
+    <GridView
+        android:id="@+id/gridView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/topPanel"
-        android:layout_above="@id/bottomButtons"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:orientation="vertical"
-        android:gravity="center">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
-            <ImageView android:id="@+id/cell_0_0"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:background="@drawable/empty_space"
-                android:layout_marginEnd="40dp"/>
-            <ImageView android:id="@+id/cell_0_1"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:background="@drawable/empty_space"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
-            <ImageView android:id="@+id/cell_1_0"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:background="@drawable/empty_space"
-                android:layout_marginEnd="40dp"/>
-            <ImageView android:id="@+id/cell_1_1"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:background="@drawable/empty_space"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
-            <ImageView android:id="@+id/cell_2_0"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:background="@drawable/empty_space"
-                android:layout_marginEnd="40dp"/>
-            <ImageView android:id="@+id/cell_2_1"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:background="@drawable/empty_space"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
-            <ImageView android:id="@+id/cell_3_0"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:background="@drawable/empty_space"
-                android:layout_marginEnd="40dp"/>
-            <ImageView android:id="@+id/cell_3_1"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:background="@drawable/empty_space"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
-            <ImageView android:id="@+id/cell_4_0"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:background="@drawable/empty_space"
-                android:layout_marginEnd="40dp"/>
-            <ImageView android:id="@+id/cell_4_1"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:background="@drawable/empty_space"/>
-        </LinearLayout>
-
-    </LinearLayout>
+        android:layout_centerInParent="true"
+        android:numColumns="2"
+        android:horizontalSpacing="0dp"
+        android:verticalSpacing="0dp"
+        android:stretchMode="columnWidth"
+        android:gravity="center"
+        android:layout_marginLeft="80dp"
+        android:layout_marginRight="80dp" />
 
 </RelativeLayout>

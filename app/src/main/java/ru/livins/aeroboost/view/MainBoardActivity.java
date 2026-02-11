@@ -8,6 +8,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import android.widget.GridView;
+import ru.livins.aeroboost.adapter.GameGridAdapter;
 
 import ru.livins.aeroboost.R;
 import ru.livins.aeroboost.viewmodel.MainBoardViewModel;
@@ -15,13 +17,11 @@ import ru.livins.aeroboost.viewmodel.MainBoardViewModel;
 public class MainBoardActivity extends AppCompatActivity {
 
     // Элементы на форме.
+    private GridView gridView;
+    private GameGridAdapter gridAdapter;
     private TextView userNameTextView;
     private TextView totalProfitRateTextView;
     private TextView totalCoinsTextView;
-
-    private final ImageView[][] cells = new ImageView[5][2];
-    private final boolean[][] occupied = new boolean[5][2];
-
     private ImageButton btnBuyPlane;
     private ImageButton btnShop;
 
@@ -35,31 +35,16 @@ public class MainBoardActivity extends AppCompatActivity {
         totalProfitRateTextView = findViewById(R.id.totalProfitRate);
         totalCoinsTextView = findViewById(R.id.totalCoins);
 
-        // Находим ВСЕ 10 ячеек
-        cells[0][0] = findViewById(R.id.cell_0_0);
-        cells[0][1] = findViewById(R.id.cell_0_1);
-        cells[1][0] = findViewById(R.id.cell_1_0);
-        cells[1][1] = findViewById(R.id.cell_1_1);
-        cells[2][0] = findViewById(R.id.cell_2_0);
-        cells[2][1] = findViewById(R.id.cell_2_1);
-        cells[3][0] = findViewById(R.id.cell_3_0);
-        cells[3][1] = findViewById(R.id.cell_3_1);
-        cells[4][0] = findViewById(R.id.cell_4_0);
-        cells[4][1] = findViewById(R.id.cell_4_1);
+        gridView = findViewById(R.id.gridView);
+        gridAdapter = new GameGridAdapter(this);
+        gridView.setAdapter(gridAdapter);
 
-        // Вешаем клики на каждую ячейку
-        for (int row = 0; row < 5; row++) {
-            for (int col = 0; col < 2; col++) {
-                final int r = row;
-                final int c = col;
-                cells[row][col].setOnClickListener(v -> {
-                    toggleCell(r, c);
-                    Toast.makeText(MainBoardActivity.this,
-                            String.format("Ячейка [%d,%d] кликнута", r, c),
-                            Toast.LENGTH_SHORT).show();
-                });
-            }
-        }
+        gridView.setOnItemClickListener((parent, view, position, id) -> {
+            int row = position / 2;
+            int col = position % 2;
+            gridAdapter.toggleCell(row, col);
+            Toast.makeText(this, "Ячейка [" + row + "," + col + "]", Toast.LENGTH_SHORT).show();
+        });
 
         // Кнопки.
         btnBuyPlane = findViewById(R.id.btnBuyPlane);
@@ -89,30 +74,4 @@ public class MainBoardActivity extends AppCompatActivity {
         });
     }
 
-
-    private void toggleCell(int row, int col) {
-        occupied[row][col] = !occupied[row][col];
-        if (row == 0 && col == 0) {
-            onButtonShow();
-        }
-        else if (row == 0 && col == 1) {
-            onButtonMove();
-        }
-        else if (occupied[row][col]) {
-            cells[row][col].setBackgroundResource(R.drawable.empty_space);
-        } else {
-            cells[row][col].setBackgroundResource(R.drawable.empty_space);
-        }
-    }
-
-    private void onButtonShow() {
-        GameBoardView planesView = this.findViewById(R.id.gameBoardView);
-        planesView.showPlane();
-    }
-
-    private void onButtonMove() {
-        GameBoardView planesView = this.findViewById(R.id.gameBoardView);
-        var planePosition = planesView.getPlanePosition();
-        planesView.setPlanePosition(planePosition + 0.05f);
-    }
 }

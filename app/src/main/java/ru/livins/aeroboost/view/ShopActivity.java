@@ -9,6 +9,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import ru.livins.aeroboost.adapter.PlanesAdapter;
+import ru.livins.aeroboost.adapter.GameGridAdapter;
 import ru.livins.aeroboost.model.PlaneItem;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +37,10 @@ public class ShopActivity extends AppCompatActivity
     private static final String TAG = "ShopActivity";
     private ListView listView;
     private PlanesAdapter adapter;
-    private List<PlaneItem> planes = new ArrayList<>();
+    private final List<PlaneItem> planes = new ArrayList<>();
     private ImageButton returnBoardButton;
+    private GameGridAdapter gameGrid;
+    boolean[][] grid = gameGrid.getGrid();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,6 +125,7 @@ public class ShopActivity extends AppCompatActivity
             Toast.makeText(this, "Откройте предыдущий самолет!", Toast.LENGTH_SHORT).show();
             return;
         }
+
         double result = tryBuyPlane(planeId, currentBalance);
 
         if (result >= 0) {
@@ -149,4 +153,5 @@ public class ShopActivity extends AppCompatActivity
             plane.setTotalCps(newTotalCps);
         }
     }
+
 }
