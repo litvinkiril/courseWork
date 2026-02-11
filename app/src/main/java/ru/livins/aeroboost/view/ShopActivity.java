@@ -39,8 +39,7 @@ public class ShopActivity extends AppCompatActivity
     private PlanesAdapter adapter;
     private final List<PlaneItem> planes = new ArrayList<>();
     private ImageButton returnBoardButton;
-    private GameGridAdapter gameGrid;
-    boolean[][] grid = gameGrid.getGrid();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +47,6 @@ public class ShopActivity extends AppCompatActivity
         setContentView(R.layout.shop_activity);
 
         Log.d(TAG, "ShopActivity started");
-
         gameModel = GameModel.getInstance();
 
         listView = findViewById(R.id.planesListView);
@@ -118,7 +116,13 @@ public class ShopActivity extends AppCompatActivity
     @Override
     public void onPlaneClick(int planeId) {
         Log.d(TAG, "Кнопка BUY нажата для самолета: " + planeId);
-
+        GameGridAdapter gameGrid = GameGridAdapter.getInstance();
+        boolean[][] grid = gameGrid.getGrid();
+        int emptyCell = gameGrid.foundEmptyCell();
+        if (emptyCell == -1) {
+            Toast.makeText(this, "Доска заполнена!", Toast.LENGTH_SHORT).show();
+            return;
+        }
         GameState currentState = gameModel.gameStateObservable.getState();
         double currentBalance = currentState.getTotalCoins();
         if (planeId >= 3 && getPlanePurchased(planeId - 1) == 0) {
