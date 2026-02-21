@@ -117,7 +117,7 @@ public class ShopActivity extends AppCompatActivity
     public void onPlaneClick(int planeId) {
         Log.d(TAG, "Кнопка BUY нажата для самолета: " + planeId);
         GameGridAdapter gameGrid = GameGridAdapter.getInstance();
-        boolean[][] grid = gameGrid.getGrid();
+        int[][] myGrid = gameGrid.getGrid();
         int emptyCell = gameGrid.foundEmptyCell();
         if (emptyCell == -1) {
             Toast.makeText(this, "Доска заполнена!", Toast.LENGTH_SHORT).show();
@@ -136,6 +136,8 @@ public class ShopActivity extends AppCompatActivity
             Toast.makeText(this, "Самолет куплен!", Toast.LENGTH_SHORT).show();
             currentState.setTotalCoins(result);
             updatePlaneData(planeId);
+            myGrid[emptyCell/ 2][emptyCell % 2] = planeId + 1;
+            gameGrid.notifyDataSetChanged();
             adapter.notifyDataSetChanged();
         } else {
             Toast.makeText(this, "Недостаточно средств!", Toast.LENGTH_SHORT).show();

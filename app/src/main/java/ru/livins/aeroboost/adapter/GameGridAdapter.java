@@ -10,7 +10,36 @@ import ru.livins.aeroboost.R;
 public class GameGridAdapter extends BaseAdapter {
     private static GameGridAdapter instance;
     private Context context;
-    private boolean[][] grid = new boolean[5][2];
+    private int[][] grid = new int[5][2];
+
+    private int getImageResource(int position) {
+        int level = grid[position / 2][position % 2];
+
+        switch (level) {
+            case 1:
+                return R.drawable.plane1;
+            case 2:
+                return R.drawable.plane2;
+            case 3:
+                return R.drawable.plane3;
+            case 4:
+                return R.drawable.plane4;
+            case 5:
+                return R.drawable.plane5;
+            case 6:
+                return R.drawable.plane6;
+            case 7:
+                return R.drawable.plane7;
+            case 8:
+                return R.drawable.plane8;
+            case 9:
+                return R.drawable.plane9;
+            case 10:
+                return R.drawable.plane10;
+            default:
+                return android.R.color.transparent;
+        }
+    }
 
     public GameGridAdapter(Context context) {
         this.context = context;
@@ -48,22 +77,13 @@ public class GameGridAdapter extends BaseAdapter {
         } else {
             iv = (ImageView) convertView;
         }
-
-        int row = position / 2;
-        int col = position % 2;
-
-        if (grid[row][col]) {
-            iv.setImageResource(R.drawable.empty_space);
-        } else {
-            iv.setImageResource(R.drawable.empty_space);
-        }
-
+        iv.setBackgroundResource(R.drawable.empty_space);
+        iv.setImageResource(getImageResource(position));
         return iv;
     }
 
     public void toggleCell(int row, int col) {
-        grid[row][col] = !grid[row][col];
-        notifyDataSetChanged();
+
     }
 
     public int foundEmptyCell() {
@@ -75,11 +95,11 @@ public class GameGridAdapter extends BaseAdapter {
         return -1;
     }
 
-    public boolean[][] getGrid() {
+    public int[][] getGrid() {
         return grid;
     }
 
     public boolean isOccupied(int row, int col) {
-        return grid[row][col];
+        return grid[row][col] != 0;
     }
 }
