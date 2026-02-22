@@ -12,6 +12,7 @@ import android.widget.GridView;
 import ru.livins.aeroboost.adapter.GameGridAdapter;
 
 import ru.livins.aeroboost.R;
+import ru.livins.aeroboost.model.RunningPlane;
 import ru.livins.aeroboost.viewmodel.MainBoardViewModel;
 
 public class MainBoardActivity extends AppCompatActivity {
@@ -24,16 +25,22 @@ public class MainBoardActivity extends AppCompatActivity {
     private TextView totalCoinsTextView;
     private ImageButton btnBuyPlane;
     private ImageButton btnShop;
+    private GameBoardView gameBoardView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_board_activity);
 
+        var viewModelProvider = new ViewModelProvider(this);
+        var viewModel = viewModelProvider.get(MainBoardViewModel.class);
+
         // Статус игры.
         userNameTextView = findViewById(R.id.userName);
         totalProfitRateTextView = findViewById(R.id.totalProfitRate);
         totalCoinsTextView = findViewById(R.id.totalCoins);
+
+        gameBoardView = findViewById(R.id.gameBoardView);
 
         gridView = findViewById(R.id.gridView);
         gridAdapter = new GameGridAdapter(this);
@@ -44,7 +51,17 @@ public class MainBoardActivity extends AppCompatActivity {
             int col = position % 2;
             gridAdapter.toggleCell(row, col);
             Toast.makeText(this, "Ячейка [" + row + "," + col + "]", Toast.LENGTH_SHORT).show();
+
+            //var item = gridAdapter.getItem(position);
+            var runningPlane = new RunningPlane();
+            runningPlane.setPlaneId(1);
+            runningPlane.setOdometer(0);
+            runningPlane.setSpeed(0.2);
+            viewModel.onPlaneAdded(runningPlane);
+            gameBoardView.addRunningPlane(runningPlane);
         });
+
+
 
         // Кнопки.
         btnBuyPlane = findViewById(R.id.btnBuyPlane);
@@ -56,14 +73,11 @@ public class MainBoardActivity extends AppCompatActivity {
         });
 
         // Привязываем ViewModel.
-        var viewModelProvider = new ViewModelProvider(this);
-        var viewModel = viewModelProvider.get(MainBoardViewModel.class);
-
         viewModel.getUserName().observe(this, value -> {
             userNameTextView.setText(value);
         });
 
-        viewModel.getTotalProfitRate().observe(this, value -> {
+        viewModel.getGameSpeed().observe(this, value -> {
             var roundedValue = Math.round(value);
             totalProfitRateTextView.setText(String.valueOf(roundedValue));
         });
@@ -71,6 +85,10 @@ public class MainBoardActivity extends AppCompatActivity {
         viewModel.getTotalCoins().observe(this, value -> {
             var roundedValue = Math.round(value);
             totalCoinsTextView.setText(String.valueOf(roundedValue));
+        });
+
+        viewModel.getGameBoardVersion().observe(this, value -> {
+            gameBoardView.invalidate();
         });
     }
 

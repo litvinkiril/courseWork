@@ -156,14 +156,41 @@ Java_ru_livins_aeroboost_model_GameModel_doGameStep(JNIEnv *env, jclass clazz, j
     jobject new_state = env->AllocObject(gameStateClass);
 
     jfieldID userNameField = env->GetFieldID(gameStateClass , "userName", "Ljava/lang/String;");
-    jfieldID totalProfitRateField = env->GetFieldID(gameStateClass , "totalProfitRate", "D");
+    jfieldID gameSpeedField = env->GetFieldID(gameStateClass , "gameSpeed", "D");
     jfieldID totalCoinsField = env->GetFieldID(gameStateClass , "totalCoins", "D");
+    jfieldID runningPlanesField = env->GetFieldID(gameStateClass , "runningPlanes","Ljava/util/List;");
 
-    (*env).SetObjectField(new_state, userNameField, env->GetObjectField(prev_state, userNameField));
-    jdouble profitRate = env->GetDoubleField(prev_state, totalProfitRateField);
+    // Обновить имя пользователя и скорость.
+    env->SetObjectField(new_state, userNameField, env->GetObjectField(prev_state, userNameField));
+    jdouble gameSpeed = env->GetDoubleField(prev_state, gameSpeedField);
+    env->SetDoubleField(new_state, gameSpeedField, gameSpeed);
+
+    // Обновить пробег самолетиков.
+    double profit = 0.02;
+    jobject runningPlanesList = env->GetObjectField(prev_state, runningPlanesField);
+    //int runningPlanesCount = env->GetArrayLength(runningPlanes);
+    jclass listOfRunningPlaneClass = env->GetObjectClass(runningPlanesList);
+    jmethodID sizeMethodId = env->GetMethodID(listOfRunningPlaneClass, "size", "()I");
+    jint runningPlanesCount = env->CallIntMethod(runningPlanesList, sizeMethodId);
+    for (int pi = 0; pi < runningPlanesCount; ++pi) {
+        //jobject runningPlane = env->GetObjectArrayElement(runningPlanes, pi);
+        jmethodID getMethodId = env->GetMethodID(listOfRunningPlaneClass, "get", "(I)Ljava/lang/Object;");
+        jobject runningPlane = env->CallObjectMethod(runningPlanesList, getMethodId, pi);
+
+        jclass runningPlaneClass = env->GetObjectClass(runningPlane);
+        jfieldID speedField = env->GetFieldID(runningPlaneClass , "speed", "D");
+        jfieldID odometerField = env->GetFieldID(runningPlaneClass , "odometer", "D");
+
+        jdouble planeSpeed = env->GetDoubleField(runningPlane, speedField);
+        jdouble planeOdometer = env->GetDoubleField(runningPlane, odometerField);
+        double newOdometer = planeOdometer + (planeSpeed / gameSpeed);
+        env->SetDoubleField(runningPlane, odometerField, newOdometer);
+    }
+    env->SetObjectField(new_state, runningPlanesField, runningPlanesList);
+
+    // Обновить счет.
     jdouble totalCoins = env->GetDoubleField(prev_state, totalCoinsField);
-    jdouble newCoins = totalCoins + profitRate;
-    env->SetDoubleField(new_state, totalProfitRateField, profitRate);
+    jdouble newCoins = totalCoins + profit;
     env->SetDoubleField(new_state, totalCoinsField, newCoins);
 
     return new_state;

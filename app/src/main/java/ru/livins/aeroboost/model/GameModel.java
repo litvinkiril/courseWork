@@ -2,6 +2,8 @@ package ru.livins.aeroboost.model;
 
 import androidx.annotation.NonNull;
 
+import java.util.ArrayList;
+
 public class GameModel {
 
     // Получает на вход текущее состояние игры (набор самолетов + их характеристики + их положение на поле)
@@ -24,7 +26,9 @@ public class GameModel {
         // но сейчас просто вот так
         var initialState = new GameState();
         initialState.setUserName("Andrej");
-        initialState.setTotalProfitRate(1);
+        initialState.setGameSpeed(10);
+        initialState.setTotalCoins(0.0);
+        initialState.setRunningPlanes(new ArrayList<>());
 
         theInstance = new GameModel(initialState);
         return theInstance;
@@ -36,9 +40,11 @@ public class GameModel {
     //
     private final Thread gameStepsThread;
     private boolean gameRunning = true;
+    private GameState state;
 
     private GameModel(GameState initialState) {
 
+        state = initialState;
         gameStateObservable.updateState(initialState);
 
         var runnable = new Runnable() {
@@ -51,8 +57,8 @@ public class GameModel {
                             var newState = doGameStep(currentState);
                             gameStateObservable.updateState(newState);
                         }
-
-                        Thread.sleep(1000);
+                        // 10 кадров в секунду.
+                        Thread.sleep(100);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -65,5 +71,10 @@ public class GameModel {
 
     public void stopGame() {
         gameRunning = false;
+    }
+
+    public void addRunningPlane(RunningPlane runningPlane) {
+        var runningPlanes = theInstance.state.getRunningPlanes();
+        runningPlanes.add(runningPlane);
     }
 }

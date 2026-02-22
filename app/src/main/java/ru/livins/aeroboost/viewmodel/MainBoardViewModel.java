@@ -8,6 +8,7 @@ import ru.livins.aeroboost.model.GameModel;
 import ru.livins.aeroboost.model.GameState;
 import ru.livins.aeroboost.model.GameStateObserver;
 import ru.livins.aeroboost.model.PlaneItem;
+import ru.livins.aeroboost.model.RunningPlane;
 
 public class MainBoardViewModel extends ViewModel implements GameStateObserver {
 
@@ -16,11 +17,15 @@ public class MainBoardViewModel extends ViewModel implements GameStateObserver {
     private final MutableLiveData<String> userName = new MutableLiveData<>();
     public LiveData<String> getUserName() { ensureModelLoaded(); return userName; }
 
-    private final MutableLiveData<Double> totalProfitRate = new MutableLiveData<>();
-    public LiveData<Double> getTotalProfitRate() { ensureModelLoaded(); return totalProfitRate; }
+    private final MutableLiveData<Double> gameSpeed = new MutableLiveData<>();
+    public LiveData<Double> getGameSpeed() { ensureModelLoaded(); return gameSpeed; }
 
     private final MutableLiveData<Double> totalCoins = new MutableLiveData<>();
     public LiveData<Double> getTotalCoins() { ensureModelLoaded(); return totalCoins; }
+
+    private int gameBoardVersionCounter = 0;
+    private final MutableLiveData<Integer> gameBoardVersion = new MutableLiveData<>();
+    public LiveData<Integer> getGameBoardVersion() { ensureModelLoaded(); return gameBoardVersion; }
 
     private void ensureModelLoaded() {
         if (model != null)
@@ -31,8 +36,8 @@ public class MainBoardViewModel extends ViewModel implements GameStateObserver {
         model.gameStateObservable.registerObserver(this);
     }
 
-    public void onPlaneAdded(PlaneItem plane) {
-
+    public void onPlaneAdded(RunningPlane runningPlane) {
+        model.addRunningPlane(runningPlane);
     }
 
     public void onPlaneRemoved(PlaneItem plane) {
@@ -42,7 +47,8 @@ public class MainBoardViewModel extends ViewModel implements GameStateObserver {
     @Override
     public void onGameStateUpdated(GameState newState) {
         userName.postValue(newState.getUserName());
-        totalProfitRate.postValue(newState.getTotalProfitRate());
+        gameSpeed.postValue(newState.getGameSpeed());
         totalCoins.postValue(newState.getTotalCoins());
+        gameBoardVersion.postValue(gameBoardVersionCounter++);
     }
 }
