@@ -61,6 +61,11 @@ public class GameGridAdapter extends BaseAdapter {
         int col = position % 2;
         return grid[row][col];
     }
+    public int getLevelPlane(int position) {
+        int row = position / 2;
+        int col = position % 2;
+        return grid[row][col];
+    }
 
     @Override
     public long getItemId(int position) {
@@ -82,9 +87,6 @@ public class GameGridAdapter extends BaseAdapter {
         return iv;
     }
 
-    public void toggleCell(int row, int col) {
-
-    }
 
     public int foundEmptyCell() {
         for (int i = 0; i < 10; ++i) {

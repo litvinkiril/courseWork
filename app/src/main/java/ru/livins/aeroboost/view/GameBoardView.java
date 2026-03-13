@@ -44,17 +44,35 @@ public class GameBoardView extends View {
     }
 
     private int[] planeResIds = new int[] {
-            R.drawable.plane1, R.drawable.plane2, R.drawable.plane3, R.drawable.plane4, R.drawable.plane5,
+            R.drawable.plane1board, R.drawable.plane2board, R.drawable.plane3board, R.drawable.plane4, R.drawable.plane5,
             R.drawable.plane6, R.drawable.plane7, R.drawable.plane8, R.drawable.plane9, R.drawable.plane10
     };
 
     private void init(Context context) {
-        // Загрузить изображения самолетов.
+        // Загрузить изображения самолетов с фиксированным размером.
         planeBitmapById = new HashMap<>();
+
+        // ФИКСИРОВАННЫЙ РАЗМЕР - ПОМЕНЯЙ НА СВОЙ!
+        int fixedWidth = 300;   // Ширина 50 пикселей
+        int fixedHeight = 300;  // Высота 50 пикселей
+
         for (int i = 0; i < 10; i++) {
             var d = AppCompatResources.getDrawable(context, planeResIds[i]);
-            var b = ((BitmapDrawable) d).getBitmap();
-            planeBitmapById.put(i, b);
+            var originalBitmap = ((BitmapDrawable) d).getBitmap();
+
+            // Масштабируем до фиксированного размера
+            Bitmap scaledBitmap = Bitmap.createScaledBitmap(
+                    originalBitmap,
+                    fixedWidth,
+                    fixedHeight,
+                    true  // фильтр для сглаживания
+            );
+
+            planeBitmapById.put(i, scaledBitmap);
+
+            // Если оригинал больше не нужен - можно освободить память
+            // (осторожно, если оригинал используется где-то еще!)
+            // originalBitmap.recycle();
         }
     }
 
@@ -82,9 +100,9 @@ public class GameBoardView extends View {
         super.onDraw(canvas);
 
         if (planeTrace == null) {
-            int viewWidth = getWidth();
-            int viewHeight = getHeight();
-            int traceDimension = 400;
+            int viewWidth = getResources().getDisplayMetrics().widthPixels;
+            int viewHeight = getResources().getDisplayMetrics().heightPixels;
+            int traceDimension = (viewWidth * 2) / 3;
             planeTrace = new PlaneTrace(viewWidth, viewHeight, traceDimension);
         }
 
@@ -93,7 +111,11 @@ public class GameBoardView extends View {
             for (var runningPlane : runningPlanes) {
                 var planeBitmap = planeBitmapById.get(runningPlane.getPlaneId());
                 var planePosition = planeTrace.getPosition(runningPlane.getOdometer());
-                canvas.drawBitmap(planeBitmap, (float) planePosition.x, (float) planePosition.y, null);
+                var rotatePlaneBitmap = rotateBitmap(planeBitmap, planePosition.direction);
+                canvas.drawBitmap(rotatePlaneBitmap,
+                        (float) planePosition.x,
+                        (float) planePosition.y,
+                        null);
             }
         }
     }

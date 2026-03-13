@@ -1,80 +1,97 @@
 package ru.livins.aeroboost.model;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GameModel {
 
-    // Получает на вход текущее состояние игры (набор самолетов + их характеристики + их положение на поле)
-    // Вызывает пересчет в ядре
-    // Возвращает новое состояние, которое передается во ViewModel
     private static native GameState doGameStep(GameState prevState);
 
-
-    // Singleton.
     private static GameModel theInstance = null;
+
     public static GameModel getInstance() {
-        if (theInstance != null)
-            return theInstance;
+        if (theInstance == null) {
+            System.loadLibrary("aeroboost-core");
 
-        // то синглтон, поэтому грузим ядро только один раз.
-        // Загрузка ядра с логикой расчетов.
-        System.loadLibrary("aeroboost-core");
+            var initialState = new GameState();
+            initialState.setUserName("Andrej");
+            initialState.setGameSpeed(25);
+            initialState.setTotalCoins(111110.0);
+            initialState.setRunningPlanes(new ArrayList<>());
 
-        // todo - грузить из файла
-        // но сейчас просто вот так
-        var initialState = new GameState();
-        initialState.setUserName("Andrej");
-        initialState.setGameSpeed(10);
-        initialState.setTotalCoins(0.0);
-        initialState.setRunningPlanes(new ArrayList<>());
-
-        theInstance = new GameModel(initialState);
+            theInstance = new GameModel(initialState);
+        }
         return theInstance;
     }
 
-    // Храним состояние игры.
     public GameStateObservable gameStateObservable = new GameStateObservable();
 
-    //
     private final Thread gameStepsThread;
-    private boolean gameRunning = true;
+    private volatile boolean gameRunning = true; // volatile для видимости между потоками
     private GameState state;
 
     private GameModel(GameState initialState) {
-
         state = initialState;
         gameStateObservable.updateState(initialState);
 
-        var runnable = new Runnable() {
-            @Override
-            public void run() {
-                while (gameRunning) {
-                    try {
-                        var currentState = gameStateObservable.getState();
-                        if (currentState != null) {
-                            var newState = doGameStep(currentState);
-                            gameStateObservable.updateState(newState);
-                        }
-                        // 10 кадров в секунду.
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+        // Используем лямбду вместо анонимного класса
+        gameStepsThread = new Thread(() -> {
+            while (gameRunning) {
+                try {
+                    GameState currentState = gameStateObservable.getState();
+                    if (currentState != null) {
+                        GameState newState = doGameStep(currentState);
+                        gameStateObservable.updateState(newState);
+                        this.state = newState; // обновляем ссылку
                     }
+                    Thread.sleep(40); // 10 FPS (1000ms/10 = 100ms)
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // восстанавливаем статус прерывания
+                    break;
                 }
             }
-        };
-        gameStepsThread = new Thread(runnable);
+        });
+
+        gameStepsThread.setName("Game-Loop-Thread"); // для отладки
+        gameStepsThread.setDaemon(true); // чтобы не блокировать завершение приложения
         gameStepsThread.start();
     }
 
     public void stopGame() {
         gameRunning = false;
+        gameStepsThread.interrupt(); // прерываем поток, если он в sleep
     }
 
     public void addRunningPlane(RunningPlane runningPlane) {
-        var runningPlanes = theInstance.state.getRunningPlanes();
+        // Ваша оригинальная логика, которая работает!
+        var runningPlanes = state.getRunningPlanes();
         runningPlanes.add(runningPlane);
+
+        // Уведомляем наблюдателей об изменении
+        gameStateObservable.updateState(state);
+    }
+
+    // Добавим полезные методы
+
+    public List<RunningPlane> getRunningPlanes() {
+        return state.getRunningPlanes(); // просто проксируем вызов к state
+    }
+
+    public void removeRunningPlane(RunningPlane runningPlane) {
+        var runningPlanes = state.getRunningPlanes();
+        runningPlanes.remove(runningPlane);
+        gameStateObservable.updateState(state);
+    }
+
+    public boolean isGameRunning() {
+        return gameRunning;
     }
 }

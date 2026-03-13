@@ -49,16 +49,18 @@ public class MainBoardActivity extends AppCompatActivity {
         gridView.setOnItemClickListener((parent, view, position, id) -> {
             int row = position / 2;
             int col = position % 2;
-            gridAdapter.toggleCell(row, col);
-            Toast.makeText(this, "Ячейка [" + row + "," + col + "]", Toast.LENGTH_SHORT).show();
+            int levelPlaneOnCell = gridAdapter.getLevelPlane(position);
+            if (levelPlaneOnCell != 0) {
+                Toast.makeText(this, "Ячейка [" + row + "," + col + "]", Toast.LENGTH_SHORT).show();
 
-            //var item = gridAdapter.getItem(position);
-            var runningPlane = new RunningPlane();
-            runningPlane.setPlaneId(1);
-            runningPlane.setOdometer(0);
-            runningPlane.setSpeed(0.2);
-            viewModel.onPlaneAdded(runningPlane);
-            gameBoardView.addRunningPlane(runningPlane);
+                //var item = gridAdapter.getItem(position);
+                var runningPlane = new RunningPlane();
+                runningPlane.setPlaneId(levelPlaneOnCell);
+                runningPlane.setOdometer(0);
+                runningPlane.setSpeed(0.2 * Math.pow(1.1, levelPlaneOnCell - 1));
+                viewModel.onPlaneAdded(runningPlane);
+                gameBoardView.addRunningPlane(runningPlane);
+            }
         });
 
 

@@ -4,7 +4,7 @@ public class RunningPlane {
 
     private int planeId;
     public int getPlaneId() { return planeId; }
-    public void setPlaneId(int planeId) { this.planeId = planeId; }
+    public void setPlaneId(int planeId) { this.planeId = planeId - 1; }
 
     private double speed;
     public double getSpeed() { return speed; }

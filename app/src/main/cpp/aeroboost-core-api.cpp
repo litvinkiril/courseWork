@@ -166,7 +166,7 @@ Java_ru_livins_aeroboost_model_GameModel_doGameStep(JNIEnv *env, jclass clazz, j
     env->SetDoubleField(new_state, gameSpeedField, gameSpeed);
 
     // Обновить пробег самолетиков.
-    double profit = 0.02;
+    double profit = 0.1;
     jobject runningPlanesList = env->GetObjectField(prev_state, runningPlanesField);
     //int runningPlanesCount = env->GetArrayLength(runningPlanes);
     jclass listOfRunningPlaneClass = env->GetObjectClass(runningPlanesList);
