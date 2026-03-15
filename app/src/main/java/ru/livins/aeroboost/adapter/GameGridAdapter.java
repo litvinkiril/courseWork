@@ -10,7 +10,7 @@ import ru.livins.aeroboost.R;
 public class GameGridAdapter extends BaseAdapter {
     private static GameGridAdapter instance;
     private Context context;
-    private int[][] grid = new int[5][2];
+    private int[][] grid = new int[4][2];
 
     private int getImageResource(int position) {
         int level = grid[position / 2][position % 2];
@@ -52,7 +52,7 @@ public class GameGridAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return 10;
+        return 8;
     }
 
     @Override
@@ -77,6 +77,7 @@ public class GameGridAdapter extends BaseAdapter {
         ImageView iv;
         if (convertView == null) {
             iv = new ImageView(context);
+
             iv.setLayoutParams(new ViewGroup.LayoutParams(250, 250));
             iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
         } else {
@@ -89,7 +90,7 @@ public class GameGridAdapter extends BaseAdapter {
 
 
     public int foundEmptyCell() {
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 8; ++i) {
             if (!isOccupied(i / 2, i % 2)) {
                 return i;
             }

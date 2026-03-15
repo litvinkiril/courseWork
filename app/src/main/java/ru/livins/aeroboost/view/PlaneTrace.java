@@ -20,46 +20,44 @@ public class PlaneTrace {
 
     public PlaneTrace(int viewWidth, int viewHeight, int traceDimension) {
         positions = new ArrayList<>();
-
-        int leftMargin = 100;
-        double coefficient = 1.8;
-        double centerX = viewWidth / 2.6;
-        double centerY = viewHeight / 3.8;
-
-        double rectHeight = traceDimension * coefficient;
-
-        int pointsWidth = 100; // Количество точек на каждой стороне
-        int pointsHeigh = (int) (pointsWidth * coefficient);
-        // ВЕРХНЯЯ СТОРОНА (справо налево)
-        for (int i = 0; i <= pointsWidth; i++) {
-            double t = (double) i / pointsWidth;
-            double x = centerX + (double) traceDimension /2 - t * (double) traceDimension;
-            double y = centerY - rectHeight/2;
-            positions.add(new TracePosition(x, y, 270)); // Движение влево
+        int cellSize = 250;
+        int centerX = viewWidth / 2;
+        int centerY = viewHeight / 2;
+        //путь от старта и +500
+        for (int i = 0; i < cellSize * 2; i += 10) {
+            positions.add(new TracePosition(viewWidth / 2 + traceDimension, viewHeight / 2 - i, 0));
         }
+        //вверх
+        for (int i = 0; i < 2 * cellSize + 50; i += 7) {
+            double t = (double) i / (2 * cellSize + 50);
+            double grade = i / 550.0 * 180;
+            grade *= -1;
+            double currentAngle;
+            currentAngle = t * Math.PI;
+            double x = centerX + traceDimension * Math.cos(currentAngle);
+            double y = centerY - (traceDimension / 2.0)* Math.sin(currentAngle);
 
-        // ЛЕВАЯ СТОРОНА (сверху вниз)
-        for (int i = 1; i <= pointsHeigh; i++) { // i начинается с 1, чтобы не дублировать угол
-            double t = (double) i / pointsHeigh;
-            double x = centerX - (double) traceDimension /2;
-            double y = centerY - rectHeight/2 + t * rectHeight;
-            positions.add(new TracePosition(x, y, 180)); // Движение вниз
+            positions.add(new TracePosition(x, y - 500 , (int) grade));
         }
-
-        // НИЖНЯЯ СТОРОНА (слево направо)
-        for (int i = 1; i <= pointsWidth; i++) {
-            double t = (double) i / pointsWidth;
-            double x = centerX - (double) traceDimension /2 + t * (double) traceDimension;
-            double y = centerY + rectHeight/2;
-            positions.add(new TracePosition(x, y, 90)); // Движение вправо
+        //путь слева
+        for (int i = 0; i < cellSize * 3.5; i += 10) {
+            positions.add(new TracePosition(viewWidth / 2 - traceDimension, viewHeight / 2 - 500 + i, 180));
         }
+        //путь снизу
+        for (int i = 0; i < 2 * cellSize + 50; i += 6) {
+            double t = (double) i / (2 * cellSize + 50);
+            double grade = i / 550.0 * 180 + 180;
+            grade *= -1;
+            double currentAngle;
+            currentAngle = t * Math.PI;
+            double x = centerX - traceDimension * Math.cos(-1 * currentAngle);
+            double y = centerY - (traceDimension / 2.0)* Math.sin(-1 * currentAngle);
 
-        // ПРАВАЯ СТОРОНА (снизу вверх)
-        for (int i = 1; i < pointsHeigh; i++) { // i < pointsPerSide, чтобы не дублировать угол
-            double t = (double) i / pointsHeigh;
-            double x = centerX + (double) traceDimension /2;
-            double y = centerY + rectHeight/2 - t * rectHeight;
-            positions.add(new TracePosition(x, y, 0)); // Движение вверх
+            positions.add(new TracePosition(x, y + 375 , (int) grade));
+        }
+        //дорисовываем путь справо
+        for (int i = 0; i < cellSize * 1.5; i += 10) {
+            positions.add(new TracePosition(viewWidth / 2 + traceDimension, centerY + 375 - i, 0));
         }
     }
 

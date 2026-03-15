@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -53,8 +54,8 @@ public class GameBoardView extends View {
         planeBitmapById = new HashMap<>();
 
         // ФИКСИРОВАННЫЙ РАЗМЕР - ПОМЕНЯЙ НА СВОЙ!
-        int fixedWidth = 300;   // Ширина 50 пикселей
-        int fixedHeight = 300;  // Высота 50 пикселей
+        int fixedWidth = 250;   // Ширина 50 пикселей
+        int fixedHeight = 250;  // Высота 50 пикселей
 
         for (int i = 0; i < 10; i++) {
             var d = AppCompatResources.getDrawable(context, planeResIds[i]);
@@ -100,22 +101,27 @@ public class GameBoardView extends View {
         super.onDraw(canvas);
 
         if (planeTrace == null) {
-            int viewWidth = getResources().getDisplayMetrics().widthPixels;
-            int viewHeight = getResources().getDisplayMetrics().heightPixels;
-            int traceDimension = (viewWidth * 2) / 3;
+            int viewWidth = getWidth();
+            int viewHeight = getHeight();
+            int traceDimension = 400; //смещение ровно на клетку + 25 пикселей + пол самолета
             planeTrace = new PlaneTrace(viewWidth, viewHeight, traceDimension);
+
+            Log.d("ViewDimensions", "Width: " + viewWidth + ", Height: " + viewHeight);
         }
 
         if (this.runningPlanes != null) {
             var runningPlanes = new ArrayList<>(this.runningPlanes);
             for (var runningPlane : runningPlanes) {
                 var planeBitmap = planeBitmapById.get(runningPlane.getPlaneId());
-                var planePosition = planeTrace.getPosition(runningPlane.getOdometer());
-                var rotatePlaneBitmap = rotateBitmap(planeBitmap, planePosition.direction);
-                canvas.drawBitmap(rotatePlaneBitmap,
-                        (float) planePosition.x,
-                        (float) planePosition.y,
-                        null);
+                if (planeBitmap != null) {
+                    var planePosition = planeTrace.getPosition(runningPlane.getOdometer());
+                    var rotatePlaneBitmap = rotateBitmap(planeBitmap, planePosition.direction);
+
+                    float drawX = (float) planePosition.x - rotatePlaneBitmap.getWidth() / 2;
+                    float drawY = (float) planePosition.y - rotatePlaneBitmap.getHeight() / 2;
+
+                    canvas.drawBitmap(rotatePlaneBitmap, drawX, drawY, null);
+                }
             }
         }
     }
