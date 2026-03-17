@@ -50,17 +50,18 @@ public class MainBoardActivity extends AppCompatActivity {
             int row = position / 2;
             int col = position % 2;
             int levelPlaneOnCell = gridAdapter.getLevelPlane(position);
-            if (levelPlaneOnCell != 0) {
+            if (levelPlaneOnCell > 0) {
                 Toast.makeText(this, "Ячейка [" + row + "," + col + "]", Toast.LENGTH_SHORT).show();
 
-                //var item = gridAdapter.getItem(position);
                 var runningPlane = new RunningPlane();
                 runningPlane.setPlaneId(levelPlaneOnCell);
                 runningPlane.setOdometer(0);
                 runningPlane.setSpeed(0.2 * Math.pow(1.1, levelPlaneOnCell - 1));
                 viewModel.onPlaneAdded(runningPlane);
                 gameBoardView.addRunningPlane(runningPlane);
+                gridAdapter.cellClicked(position);
             }
+
         });
 
 

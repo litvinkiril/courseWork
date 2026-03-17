@@ -14,8 +14,9 @@ public class GameGridAdapter extends BaseAdapter {
 
     private int getImageResource(int position) {
         int level = grid[position / 2][position % 2];
+        int absLevel = Math.abs(level); // Берем абсолютное значение
 
-        switch (level) {
+        switch (absLevel) {
             case 1:
                 return R.drawable.plane1;
             case 2:
@@ -67,6 +68,13 @@ public class GameGridAdapter extends BaseAdapter {
         return grid[row][col];
     }
 
+    public void cellClicked(int position) {
+        int row = position / 2;
+        int col = position % 2;
+        grid[row][col] *= -1;
+        notifyDataSetChanged();
+    }
+
     @Override
     public long getItemId(int position) {
         return position;
@@ -77,14 +85,24 @@ public class GameGridAdapter extends BaseAdapter {
         ImageView iv;
         if (convertView == null) {
             iv = new ImageView(context);
-
             iv.setLayoutParams(new ViewGroup.LayoutParams(250, 250));
             iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
         } else {
             iv = (ImageView) convertView;
         }
+
         iv.setBackgroundResource(R.drawable.empty_space);
+
+        int level = grid[position / 2][position % 2];
         iv.setImageResource(getImageResource(position));
+
+        // Если level отрицательный, делаем изображение полупрозрачным
+        if (level < 0) {
+            iv.setAlpha(0.5f); // 0.0 - полностью прозрачный, 1.0 - полностью непрозрачный
+        } else {
+            iv.setAlpha(1.0f); // Возвращаем полную непрозрачность для положительных значений
+        }
+
         return iv;
     }
 

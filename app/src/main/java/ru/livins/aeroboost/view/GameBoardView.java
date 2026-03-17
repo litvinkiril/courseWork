@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -29,6 +30,8 @@ public class GameBoardView extends View {
     private PlaneTrace planeTrace = null;
     private List<RunningPlane> runningPlanes = new ArrayList<>();
 
+    private static native void circlePlane(int planeId);
+
     public GameBoardView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(context);
@@ -44,7 +47,7 @@ public class GameBoardView extends View {
         init(context);
     }
 
-    private int[] planeResIds = new int[] {
+    private final int[] planeResIds = new int[] {
             R.drawable.plane1board, R.drawable.plane2board, R.drawable.plane3board, R.drawable.plane4, R.drawable.plane5,
             R.drawable.plane6, R.drawable.plane7, R.drawable.plane8, R.drawable.plane9, R.drawable.plane10
     };
@@ -59,6 +62,7 @@ public class GameBoardView extends View {
 
         for (int i = 0; i < 10; i++) {
             var d = AppCompatResources.getDrawable(context, planeResIds[i]);
+            assert d != null;
             var originalBitmap = ((BitmapDrawable) d).getBitmap();
 
             // Масштабируем до фиксированного размера
@@ -117,9 +121,9 @@ public class GameBoardView extends View {
                     var planePosition = planeTrace.getPosition(runningPlane.getOdometer());
                     var rotatePlaneBitmap = rotateBitmap(planeBitmap, planePosition.direction);
 
-                    float drawX = (float) planePosition.x - rotatePlaneBitmap.getWidth() / 2;
-                    float drawY = (float) planePosition.y - rotatePlaneBitmap.getHeight() / 2;
-
+                    float drawX = (float) planePosition.x - (float) rotatePlaneBitmap.getWidth() / 2;
+                    float drawY = (float) planePosition.y - (float) rotatePlaneBitmap.getHeight() / 2;
+                    //circlePlane(runningPlane.getPlaneId());
                     canvas.drawBitmap(rotatePlaneBitmap, drawX, drawY, null);
                 }
             }

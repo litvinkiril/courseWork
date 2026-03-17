@@ -155,42 +155,74 @@ Java_ru_livins_aeroboost_model_GameModel_doGameStep(JNIEnv *env, jclass clazz, j
     jclass gameStateClass = env->GetObjectClass(prev_state);
     jobject new_state = env->AllocObject(gameStateClass);
 
-    jfieldID userNameField = env->GetFieldID(gameStateClass , "userName", "Ljava/lang/String;");
-    jfieldID gameSpeedField = env->GetFieldID(gameStateClass , "gameSpeed", "D");
-    jfieldID totalCoinsField = env->GetFieldID(gameStateClass , "totalCoins", "D");
-    jfieldID runningPlanesField = env->GetFieldID(gameStateClass , "runningPlanes","Ljava/util/List;");
+    jfieldID userNameField = env->GetFieldID(gameStateClass, "userName", "Ljava/lang/String;");
+    jfieldID gameSpeedField = env->GetFieldID(gameStateClass, "gameSpeed", "D");
+    jfieldID totalCoinsField = env->GetFieldID(gameStateClass, "totalCoins", "D");
+    jfieldID runningPlanesField = env->GetFieldID(gameStateClass, "runningPlanes", "Ljava/util/List;");
 
-    // Обновить имя пользователя и скорость.
+    // Копируем имя пользователя и скорость
     env->SetObjectField(new_state, userNameField, env->GetObjectField(prev_state, userNameField));
     jdouble gameSpeed = env->GetDoubleField(prev_state, gameSpeedField);
     env->SetDoubleField(new_state, gameSpeedField, gameSpeed);
 
-    // Обновить пробег самолетиков.
-    double profit = 0.1;
+    // Получаем текущее количество монет
+    jdouble totalCoins = env->GetDoubleField(prev_state, totalCoinsField);
+
+    // Получаем список самолетов
     jobject runningPlanesList = env->GetObjectField(prev_state, runningPlanesField);
-    //int runningPlanesCount = env->GetArrayLength(runningPlanes);
     jclass listOfRunningPlaneClass = env->GetObjectClass(runningPlanesList);
     jmethodID sizeMethodId = env->GetMethodID(listOfRunningPlaneClass, "size", "()I");
     jint runningPlanesCount = env->CallIntMethod(runningPlanesList, sizeMethodId);
+
+    // Обновить пробег самолетиков и считать монеты за круги
+    jdouble additionalCoins = 0.0;
+
     for (int pi = 0; pi < runningPlanesCount; ++pi) {
-        //jobject runningPlane = env->GetObjectArrayElement(runningPlanes, pi);
         jmethodID getMethodId = env->GetMethodID(listOfRunningPlaneClass, "get", "(I)Ljava/lang/Object;");
         jobject runningPlane = env->CallObjectMethod(runningPlanesList, getMethodId, pi);
 
         jclass runningPlaneClass = env->GetObjectClass(runningPlane);
-        jfieldID speedField = env->GetFieldID(runningPlaneClass , "speed", "D");
-        jfieldID odometerField = env->GetFieldID(runningPlaneClass , "odometer", "D");
+        jfieldID speedField = env->GetFieldID(runningPlaneClass, "speed", "D");
+        jfieldID odometerField = env->GetFieldID(runningPlaneClass, "odometer", "D");
+        jfieldID planeIdField = env->GetFieldID(runningPlaneClass, "planeId", "I"); // ВАЖНО: "I" для int!
 
         jdouble planeSpeed = env->GetDoubleField(runningPlane, speedField);
         jdouble planeOdometer = env->GetDoubleField(runningPlane, odometerField);
+        jint planeId = env->GetIntField(runningPlane, planeIdField);
+
+        // Сохраняем старое значение для проверки пересечения круга
+        double oldOdometer = planeOdometer;
+
+        // Вычисляем новый odometer
         double newOdometer = planeOdometer + (planeSpeed / gameSpeed);
+
+        // Проверяем, пересек ли самолет границу целого числа (сделал круг)
+        // Используем floor для определения целых частей
+        int oldCircle = static_cast<int>(floor(oldOdometer));
+        int newCircle = static_cast<int>(floor(newOdometer));
+
+        // Если целая часть увеличилась, значит самолет сделал круг(и)
+        if (newCircle > oldCircle) {
+            // Сколько кругов сделано
+            int circlesCompleted = newCircle - oldCircle;
+
+            // Получаем cpsPerUnit из глобального массива planes
+            // Проверяем, что planeId в допустимых пределах
+            if (planeId >= 0 && planeId < planes.size()) {
+                // Добавляем монеты: cpsPerUnit * количество кругов
+                additionalCoins += planes[planeId].cpsPerUnit;
+            }
+        }
+
+        // Устанавливаем новое значение odometer
         env->SetDoubleField(runningPlane, odometerField, newOdometer);
     }
+
+    // Устанавливаем обновленный список обратно
     env->SetObjectField(new_state, runningPlanesField, runningPlanesList);
 
-    // Обновить счет.
-    jdouble totalCoins = env->GetDoubleField(prev_state, totalCoinsField);
-    jdouble newCoins = totalCoins + profit;
+    // Обновляем счет с добавленными монетами
+    jdouble newCoins = totalCoins + additionalCoins;
     env->SetDoubleField(new_state, totalCoinsField, newCoins);
 
     return new_state;
@@ -208,4 +240,33 @@ Java_ru_livins_aeroboost_adapter_PlanesAdapter_opened(JNIEnv *env, jclass clazz,
     else {
         return false;
     }
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_ru_livins_aeroboost_view_GameBoardView_circlePlane(JNIEnv *env, jclass clazz, jint plane_id) {
+
+    // Получаем GameModel instance
+    jclass gameModelClass = env->FindClass("ru/livins/aeroboost/model/GameModel");
+    jmethodID getInstanceMethod = env->GetStaticMethodID(gameModelClass, "getInstance", "()Lru/livins/aeroboost/model/GameModel;");
+    jobject gameModel = env->CallStaticObjectMethod(gameModelClass, getInstanceMethod);
+
+    // Получаем gameStateObservable
+    jfieldID gameStateObservableField = env->GetFieldID(gameModelClass, "gameStateObservable", "Lru/livins/aeroboost/model/GameStateObservable;");
+    jobject gameStateObservable = env->GetObjectField(gameModel, gameStateObservableField);
+
+    // Получаем текущее состояние
+    jclass observableClass = env->GetObjectClass(gameStateObservable);
+    jmethodID getStateMethod = env->GetMethodID(observableClass, "getState", "()Lru/livins/aeroboost/model/GameState;");
+    jobject gameState = env->CallObjectMethod(gameStateObservable, getStateMethod);
+
+    // Получаем totalCoins
+    jclass gameStateClass = env->GetObjectClass(gameState);
+    jfieldID totalCoinsField = env->GetFieldID(gameStateClass, "totalCoins", "D");
+    jdouble totalCoins = env->GetDoubleField(gameState, totalCoinsField);
+
+    // Используем ваш массив planes
+    jdouble newCoins = totalCoins + planes[plane_id].cpsPerUnit;
+
+    // Устанавливаем новое значение
+    env->SetDoubleField(gameState, totalCoinsField, newCoins);
 }

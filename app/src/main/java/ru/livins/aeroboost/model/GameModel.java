@@ -24,7 +24,7 @@ public class GameModel {
             var initialState = new GameState();
             initialState.setUserName("Andrej");
             initialState.setGameSpeed(25);
-            initialState.setTotalCoins(111110.0);
+            initialState.setTotalCoins(50.0);
             initialState.setRunningPlanes(new ArrayList<>());
 
             theInstance = new GameModel(initialState);
