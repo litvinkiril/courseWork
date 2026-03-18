@@ -17,8 +17,6 @@ import ru.livins.aeroboost.viewmodel.MainBoardViewModel;
 
 public class MainBoardActivity extends AppCompatActivity {
 
-    // Элементы на форме.
-    private GridView gridView;
     private GameGridAdapter gridAdapter;
     private TextView userNameTextView;
     private TextView totalProfitRateTextView;
@@ -26,6 +24,10 @@ public class MainBoardActivity extends AppCompatActivity {
     private ImageButton btnBuyPlane;
     private ImageButton btnShop;
     private GameBoardView gameBoardView;
+
+    private static native double countCpsPerSecond(int planeId);
+
+    private RunningPlane[][] gridPlanes = new RunningPlane[4][2];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +44,8 @@ public class MainBoardActivity extends AppCompatActivity {
 
         gameBoardView = findViewById(R.id.gameBoardView);
 
-        gridView = findViewById(R.id.gridView);
+        // Элементы на форме.
+        GridView gridView = findViewById(R.id.gridView);
         gridAdapter = new GameGridAdapter(this);
         gridView.setAdapter(gridAdapter);
 
@@ -50,6 +53,7 @@ public class MainBoardActivity extends AppCompatActivity {
             int row = position / 2;
             int col = position % 2;
             int levelPlaneOnCell = gridAdapter.getLevelPlane(position);
+
             if (levelPlaneOnCell > 0) {
                 Toast.makeText(this, "Ячейка [" + row + "," + col + "]", Toast.LENGTH_SHORT).show();
 
@@ -57,11 +61,32 @@ public class MainBoardActivity extends AppCompatActivity {
                 runningPlane.setPlaneId(levelPlaneOnCell);
                 runningPlane.setOdometer(0);
                 runningPlane.setSpeed(0.2 * Math.pow(1.1, levelPlaneOnCell - 1));
+                gridPlanes[row][col] = runningPlane;
                 viewModel.onPlaneAdded(runningPlane);
                 gameBoardView.addRunningPlane(runningPlane);
                 gridAdapter.cellClicked(position);
+
+                String text = totalProfitRateTextView.getText().toString();
+                double value = Double.parseDouble(text);
+                double nowProfit = countCpsPerSecond(levelPlaneOnCell - 1);
+                double result = value + nowProfit;
+                totalProfitRateTextView.setText(String.format("%.2f", result));  // ОКРУГЛЕНИЕ ДО СОТЫХ
             }
 
+            if (levelPlaneOnCell < 0) {
+                RunningPlane planeToRemove = gridPlanes[row][col];
+                viewModel.onPlaneRemoved(planeToRemove);
+                gameBoardView.removeRunningPlane(planeToRemove);
+                gridAdapter.cellClicked(position);
+                gridPlanes[row][col] = null;
+
+                String text = totalProfitRateTextView.getText().toString();
+                double value = Double.parseDouble(text);
+                double nowProfit = countCpsPerSecond(Math.abs(levelPlaneOnCell) - 1);
+                double result = value - nowProfit;
+                result = Math.abs(result);
+                totalProfitRateTextView.setText(String.format("%.2f", result));  // ОКРУГЛЕНИЕ ДО СОТЫХ
+            }
         });
 
 
@@ -80,10 +105,7 @@ public class MainBoardActivity extends AppCompatActivity {
             userNameTextView.setText(value);
         });
 
-        viewModel.getGameSpeed().observe(this, value -> {
-            var roundedValue = Math.round(value);
-            totalProfitRateTextView.setText(String.valueOf(roundedValue));
-        });
+
 
         viewModel.getTotalCoins().observe(this, value -> {
             var roundedValue = Math.round(value);

@@ -40,14 +40,13 @@ public class MainBoardViewModel extends ViewModel implements GameStateObserver {
         model.addRunningPlane(runningPlane);
     }
 
-    public void onPlaneRemoved(PlaneItem plane) {
-
+    public void onPlaneRemoved(RunningPlane runningPlane) {
+        model.removeRunningPlane(runningPlane);
     }
 
     @Override
     public void onGameStateUpdated(GameState newState) {
         userName.postValue(newState.getUserName());
-        gameSpeed.postValue(newState.getGameSpeed());
         totalCoins.postValue(newState.getTotalCoins());
         gameBoardVersion.postValue(gameBoardVersionCounter++);
     }

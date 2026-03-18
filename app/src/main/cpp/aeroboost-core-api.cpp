@@ -194,7 +194,7 @@ Java_ru_livins_aeroboost_model_GameModel_doGameStep(JNIEnv *env, jclass clazz, j
         double oldOdometer = planeOdometer;
 
         // Вычисляем новый odometer
-        double newOdometer = planeOdometer + (planeSpeed / gameSpeed);
+        double newOdometer = planeOdometer + (planeSpeed / 25);
 
         // Проверяем, пересек ли самолет границу целого числа (сделал круг)
         // Используем floor для определения целых частей
@@ -241,32 +241,12 @@ Java_ru_livins_aeroboost_adapter_PlanesAdapter_opened(JNIEnv *env, jclass clazz,
         return false;
     }
 }
+
 extern "C"
-JNIEXPORT void JNICALL
-Java_ru_livins_aeroboost_view_GameBoardView_circlePlane(JNIEnv *env, jclass clazz, jint plane_id) {
-
-    // Получаем GameModel instance
-    jclass gameModelClass = env->FindClass("ru/livins/aeroboost/model/GameModel");
-    jmethodID getInstanceMethod = env->GetStaticMethodID(gameModelClass, "getInstance", "()Lru/livins/aeroboost/model/GameModel;");
-    jobject gameModel = env->CallStaticObjectMethod(gameModelClass, getInstanceMethod);
-
-    // Получаем gameStateObservable
-    jfieldID gameStateObservableField = env->GetFieldID(gameModelClass, "gameStateObservable", "Lru/livins/aeroboost/model/GameStateObservable;");
-    jobject gameStateObservable = env->GetObjectField(gameModel, gameStateObservableField);
-
-    // Получаем текущее состояние
-    jclass observableClass = env->GetObjectClass(gameStateObservable);
-    jmethodID getStateMethod = env->GetMethodID(observableClass, "getState", "()Lru/livins/aeroboost/model/GameState;");
-    jobject gameState = env->CallObjectMethod(gameStateObservable, getStateMethod);
-
-    // Получаем totalCoins
-    jclass gameStateClass = env->GetObjectClass(gameState);
-    jfieldID totalCoinsField = env->GetFieldID(gameStateClass, "totalCoins", "D");
-    jdouble totalCoins = env->GetDoubleField(gameState, totalCoinsField);
-
-    // Используем ваш массив planes
-    jdouble newCoins = totalCoins + planes[plane_id].cpsPerUnit;
-
-    // Устанавливаем новое значение
-    env->SetDoubleField(gameState, totalCoinsField, newCoins);
+JNIEXPORT jdouble JNICALL
+Java_ru_livins_aeroboost_view_MainBoardActivity_countCpsPerSecond(JNIEnv *env, jclass clazz,
+                                                                  jint plane_id) {
+    double planeSpeed = 0.2 * pow(1.1, plane_id - 1);
+    int coin = planes[plane_id].cpsPerUnit;
+    return coin * planeSpeed;
 }

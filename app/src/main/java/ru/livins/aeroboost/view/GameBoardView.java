@@ -30,8 +30,6 @@ public class GameBoardView extends View {
     private PlaneTrace planeTrace = null;
     private List<RunningPlane> runningPlanes = new ArrayList<>();
 
-    private static native void circlePlane(int planeId);
-
     public GameBoardView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(context);
@@ -84,6 +82,11 @@ public class GameBoardView extends View {
     public void addRunningPlane(RunningPlane runningPlane) {
         var copy = new ArrayList<>(runningPlanes);
         copy.add(runningPlane);
+        runningPlanes = copy;
+    }
+    public void removeRunningPlane(RunningPlane runningPlane) {
+        var copy = new ArrayList<>(runningPlanes);
+        copy.remove(runningPlane);
         runningPlanes = copy;
     }
 

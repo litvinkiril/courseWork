@@ -25,7 +25,7 @@ public class PlaneTrace {
         int centerY = viewHeight / 2;
         //путь от старта и +500
         for (int i = 0; i < cellSize * 2; i += 10) {
-            positions.add(new TracePosition(viewWidth / 2 + traceDimension, viewHeight / 2 - i, 0));
+            positions.add(new TracePosition((double) viewWidth / 2 + traceDimension, (double) viewHeight / 2 - i, 0));
         }
         //вверх
         for (int i = 0; i < 2 * cellSize + 50; i += 7) {
@@ -41,7 +41,7 @@ public class PlaneTrace {
         }
         //путь слева
         for (int i = 0; i < cellSize * 3.5; i += 10) {
-            positions.add(new TracePosition(viewWidth / 2 - traceDimension, viewHeight / 2 - 500 + i, 180));
+            positions.add(new TracePosition( (double) viewWidth / 2 - traceDimension, (double) viewHeight / 2 - 500 + i, 180));
         }
         //путь снизу
         for (int i = 0; i < 2 * cellSize + 50; i += 6) {
@@ -57,7 +57,7 @@ public class PlaneTrace {
         }
         //дорисовываем путь справо
         for (int i = 0; i < cellSize * 1.5; i += 10) {
-            positions.add(new TracePosition(viewWidth / 2 + traceDimension, centerY + 375 - i, 0));
+            positions.add(new TracePosition((double) viewWidth / 2 + traceDimension, centerY + 375 - i, 0));
         }
     }
 
