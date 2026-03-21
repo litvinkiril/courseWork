@@ -7,7 +7,7 @@ import android.os.Handler;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
+import android.graphics.drawable.ColorDrawable;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -34,6 +34,8 @@ public class MainBoardActivity extends AppCompatActivity {
     private GameBoardView gameBoardView;
     private GridView gridView;
 
+    private ImageView rubbish;
+
     private static native double countCpsPerSecond(int planeId);
 
     private RunningPlane[][] gridPlanes = new RunningPlane[4][2];
@@ -47,6 +49,7 @@ public class MainBoardActivity extends AppCompatActivity {
         var viewModel = viewModelProvider.get(MainBoardViewModel.class);
 
         // Статус игры.
+        rubbish =findViewById(R.id.rubbishImage);
         userNameTextView = findViewById(R.id.userName);
         totalProfitRateTextView = findViewById(R.id.totalProfitRate);
         totalCoinsTextView = findViewById(R.id.totalCoins);
@@ -118,18 +121,27 @@ public class MainBoardActivity extends AppCompatActivity {
                     return true;
 
                 case DragEvent.ACTION_DRAG_ENTERED:
-                    v.setBackgroundColor(0x80FFFFFF);
+                    // Определяем ячейку под курсором и подсвечиваем её
+                    highlightCellAtPosition(event);
+                    return true;
+
+                case DragEvent.ACTION_DRAG_LOCATION:
+                    // Обновляем подсветку при движении
+                    updateHighlightAtPosition(event);
                     return true;
 
                 case DragEvent.ACTION_DRAG_EXITED:
-                    v.setBackgroundColor(0x00000000);
+                    // Убираем подсветку
+                    clearAllHighlights();
                     return true;
 
                 case DragEvent.ACTION_DROP:
+                    clearAllHighlights();
                     handleDrop(event, v);
                     return true;
 
                 case DragEvent.ACTION_DRAG_ENDED:
+                    clearAllHighlights();
                     v.setBackgroundColor(0x00000000);
                     return true;
             }
@@ -169,7 +181,7 @@ public class MainBoardActivity extends AppCompatActivity {
         dragImageView.setImageResource(imageRes);
 
         // Явно задаем размеры в пикселях
-        int sizeInPx = (int) (150 * getResources().getDisplayMetrics().density);
+        int sizeInPx = 250;
         dragImageView.setLayoutParams(new ViewGroup.LayoutParams(sizeInPx, sizeInPx));
         dragImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
@@ -222,7 +234,11 @@ public class MainBoardActivity extends AppCompatActivity {
     private void handleDrop(DragEvent event, View targetView) {
         // Получаем данные о перетаскиваемом объекте
         ClipData clipData = event.getClipData();
-        if (clipData == null) return;
+        if (clipData == null) {
+            Toast.makeText(this, "Упало не на ячейку", Toast.LENGTH_SHORT).show();
+            return;
+
+        };
 
         String data = clipData.getItemAt(0).getText().toString();
         String[] parts = data.split(",");
@@ -237,7 +253,7 @@ public class MainBoardActivity extends AppCompatActivity {
         // Определяем, на какую ячейку упала картинка
         int targetPosition = getPositionFromCoordinates(dropX, dropY);
 
-        if (targetPosition != -1) {
+        if (targetPosition >= 0) {
             int targetRow = targetPosition / 2;
             int targetCol = targetPosition % 2;
             if (targetRow == startRow && targetCol == startCol) {
@@ -258,6 +274,10 @@ public class MainBoardActivity extends AppCompatActivity {
                 Toast.makeText(this, "Ячейка занята!", Toast.LENGTH_SHORT).show();
             }
         }
+        else  {
+            Toast.makeText(this, "Самолет удален [" +"]",
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void mergePlane(int fromPosition, int toPosition) {
@@ -269,12 +289,14 @@ public class MainBoardActivity extends AppCompatActivity {
     }
 
     private int getPositionFromCoordinates(float x, float y) {
-        // Получаем размеры GridView
+        // Получаем реальные размеры GridView, а не жестко заданные
         int gridWidth = gridView.getWidth();
         int gridHeight = gridView.getHeight();
         int totalItems = gridAdapter.getCount();
 
-        if (gridWidth == 0 || gridHeight == 0 || totalItems == 0) return -1;
+        if (gridWidth == 0 || gridHeight == 0 || totalItems == 0) {
+            return -1;
+        }
 
         int cellWidth = gridWidth / 2;
         int cellHeight = gridHeight / (totalItems / 2);
@@ -285,6 +307,25 @@ public class MainBoardActivity extends AppCompatActivity {
         int totalRows = totalItems / 2;
         if (row >= 0 && row < totalRows && col >= 0 && col < 2) {
             return row * 2 + col;
+        }
+
+        // Проверка на мусорку
+        if (rubbish != null) {
+            int[] rubbishLocation = new int[2];
+            rubbish.getLocationOnScreen(rubbishLocation);
+
+            int[] gridLocation = new int[2];
+            gridView.getLocationOnScreen(gridLocation);
+
+            float rubbishLeft = rubbishLocation[0] - gridLocation[0];
+            float rubbishTop = rubbishLocation[1] - gridLocation[1];
+            float rubbishRight = rubbishLeft + rubbish.getWidth();
+            float rubbishBottom = rubbishTop + rubbish.getHeight();
+
+            if (x >= rubbishLeft && x <= rubbishRight &&
+                    y >= rubbishTop && y <= rubbishBottom) {
+                return -2; // Код для мусорки
+            }
         }
 
         return -1;
@@ -317,6 +358,58 @@ public class MainBoardActivity extends AppCompatActivity {
 
             default:
                 return R.drawable.plane1;
+        }
+    }
+
+    private View currentlyHighlightedCell = null;
+
+    private void highlightCellAtPosition(DragEvent event) {
+        // Получаем координаты относительно GridView
+        float x = event.getX();
+        float y = event.getY();
+
+        // Определяем позицию ячейки
+        int position = getPositionFromCoordinates(x, y);
+
+        if (position != -1) {
+            highlightCell(position);
+        }
+    }
+
+    private void updateHighlightAtPosition(DragEvent event) {
+        float x = event.getX();
+        float y = event.getY();
+
+        int position = getPositionFromCoordinates(x, y);
+
+        if (position != -1) {
+            highlightCell(position);
+        } else {
+            clearAllHighlights();
+        }
+    }
+
+    private void highlightCell(int position) {
+        View cellView = gridView.getChildAt(position);
+
+        if (currentlyHighlightedCell == cellView) {
+            return;
+        }
+
+        clearAllHighlights();
+
+        if (cellView != null) {
+            // Устанавливаем foreground (полупрозрачный белый)
+            cellView.setForeground(new ColorDrawable(0x80FFFFFF));
+            currentlyHighlightedCell = cellView;
+        }
+    }
+
+    private void clearAllHighlights() {
+        if (currentlyHighlightedCell != null) {
+            // Убираем foreground
+            currentlyHighlightedCell.setForeground(null);
+            currentlyHighlightedCell = null;
         }
     }
 }
