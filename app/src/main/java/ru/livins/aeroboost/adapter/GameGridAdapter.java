@@ -9,8 +9,8 @@ import ru.livins.aeroboost.R;
 
 public class GameGridAdapter extends BaseAdapter {
     private static GameGridAdapter instance;
-    private Context context;
-    private int[][] grid = new int[4][2];
+    private final Context context;
+    private final int[][] grid = new int[4][2];
 
     private int getImageResource(int position) {
         int level = grid[position / 2][position % 2];
@@ -74,6 +74,27 @@ public class GameGridAdapter extends BaseAdapter {
         grid[row][col] *= -1;
         notifyDataSetChanged();
     }
+
+    public void upgradePlane(int fromPosition, int toPosition) {
+        int fromRow = fromPosition / 2;
+        int fromCol = fromPosition % 2;
+        int toRow = toPosition / 2;
+        int toCol = toPosition % 2;
+        grid[fromRow][fromCol] = 0;
+        grid[toRow][toCol]++;
+        notifyDataSetChanged();
+    }
+
+    public void movePlane(int fromPosition, int toPosition) {
+        int fromRow = fromPosition / 2;
+        int fromCol = fromPosition % 2;
+        int toRow = toPosition / 2;
+        int toCol = toPosition % 2;
+        grid[toRow][toCol] = grid[fromRow][fromCol];
+        grid[fromRow][fromCol] = 0;
+        notifyDataSetChanged();
+    }
+
 
     @Override
     public long getItemId(int position) {
