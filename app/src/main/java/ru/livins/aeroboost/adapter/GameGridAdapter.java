@@ -94,7 +94,12 @@ public class GameGridAdapter extends BaseAdapter {
         grid[fromRow][fromCol] = 0;
         notifyDataSetChanged();
     }
-
+    public void throwOutPlane(int fromPosition) {
+        int fromRow = fromPosition / 2;
+        int fromCol = fromPosition % 2;
+        grid[fromRow][fromCol] = 0;
+        notifyDataSetChanged();
+    }
 
     @Override
     public long getItemId(int position) {
