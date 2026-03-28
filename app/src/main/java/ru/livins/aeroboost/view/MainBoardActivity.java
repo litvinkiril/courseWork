@@ -14,6 +14,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.content.ClipData;
 import android.view.View;
+
+import java.util.Locale;
+
 import ru.livins.aeroboost.R;
 import ru.livins.aeroboost.adapter.GameGridAdapter;
 import ru.livins.aeroboost.model.RunningPlane;
@@ -245,7 +248,8 @@ public class MainBoardActivity extends AppCompatActivity {
             result = Math.abs(value - nowProfit);
         }
 
-        totalProfitRateTextView.setText(String.format("%.2f", result));
+        // При форматировании использовать точку как разделитель.
+        totalProfitRateTextView.setText(String.format(Locale.ROOT, "%.2f", result));
     }
 
     // Добавьте эти методы в MainBoardActivity
