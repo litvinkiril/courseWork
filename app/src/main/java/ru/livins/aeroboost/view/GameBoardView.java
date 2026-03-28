@@ -1,33 +1,25 @@
 package ru.livins.aeroboost.view;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import ru.livins.aeroboost.R;
 import ru.livins.aeroboost.model.RunningPlane;
 
 public class GameBoardView extends View {
 
-    private Map<Integer, Bitmap> planeBitmapById;
     private PlaneTrace planeTrace = null;
+    private PlaneBitmaps planeBitmaps;
     private List<RunningPlane> runningPlanes = new ArrayList<>();
 
     public GameBoardView(Context context, AttributeSet attrs, int defStyle) {
@@ -51,31 +43,14 @@ public class GameBoardView extends View {
     };
 
     private void init(Context context) {
-        // Загрузить изображения самолетов с фиксированным размером.
-        planeBitmapById = new HashMap<>();
-
-        // ФИКСИРОВАННЫЙ РАЗМЕР - ПОМЕНЯЙ НА СВОЙ!
-        int fixedWidth = 250;   // Ширина 50 пикселей
-        int fixedHeight = 250;  // Высота 50 пикселей
+        planeBitmaps = new PlaneBitmaps(250, 250);
 
         for (int i = 0; i < 10; i++) {
             var d = AppCompatResources.getDrawable(context, planeResIds[i]);
             assert d != null;
             var originalBitmap = ((BitmapDrawable) d).getBitmap();
 
-            // Масштабируем до фиксированного размера
-            Bitmap scaledBitmap = Bitmap.createScaledBitmap(
-                    originalBitmap,
-                    fixedWidth,
-                    fixedHeight,
-                    true  // фильтр для сглаживания
-            );
-
-            planeBitmapById.put(i, scaledBitmap);
-
-            // Если оригинал больше не нужен - можно освободить память
-            // (осторожно, если оригинал используется где-то еще!)
-            // originalBitmap.recycle();
+            planeBitmaps.addPlane(i, originalBitmap);
         }
     }
 
@@ -90,28 +65,18 @@ public class GameBoardView extends View {
         runningPlanes = copy;
     }
 
-    private Bitmap rotateBitmap(Bitmap sourceBitmap, double angle) {
-        Matrix matrix = new Matrix();
-        matrix.postRotate((float)angle);
-        return Bitmap.createBitmap(
-                sourceBitmap,
-                0, 0,
-                sourceBitmap.getWidth(),
-                sourceBitmap.getHeight(),
-                matrix,
-                true
-        );
-    }
-
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
 
+        // Ленивая инициализация planeTrace
         if (planeTrace == null) {
             int viewWidth = getWidth();
             int viewHeight = getHeight();
             int traceDimension = 400; //смещение ровно на клетку + 25 пикселей + пол самолета
             planeTrace = new PlaneTrace(viewWidth, viewHeight, traceDimension);
+
+            planeBitmaps.addRotatedBitmaps(planeTrace.getAllDirections());
 
             Log.d("ViewDimensions", "Width: " + viewWidth + ", Height: " + viewHeight);
         }
@@ -119,15 +84,13 @@ public class GameBoardView extends View {
         if (this.runningPlanes != null) {
             var runningPlanes = new ArrayList<>(this.runningPlanes);
             for (var runningPlane : runningPlanes) {
-                var planeBitmap = planeBitmapById.get(runningPlane.getPlaneId());
+                var planeId = runningPlane.getPlaneId();
+                var planePosition = planeTrace.getPosition(runningPlane.getOdometer());
+                var planeBitmap = planeBitmaps.getRotatedBitmap(planeId, planePosition.direction);
                 if (planeBitmap != null) {
-                    var planePosition = planeTrace.getPosition(runningPlane.getOdometer());
-                    var rotatePlaneBitmap = rotateBitmap(planeBitmap, planePosition.direction);
-
-                    float drawX = (float) planePosition.x - (float) rotatePlaneBitmap.getWidth() / 2;
-                    float drawY = (float) planePosition.y - (float) rotatePlaneBitmap.getHeight() / 2;
-                    //circlePlane(runningPlane.getPlaneId());
-                    canvas.drawBitmap(rotatePlaneBitmap, drawX, drawY, null);
+                    float drawX = (float) planePosition.x - (float) planeBitmap.getWidth() / 2;
+                    float drawY = (float) planePosition.y - (float) planeBitmap.getHeight() / 2;
+                    canvas.drawBitmap(planeBitmap, drawX, drawY, null);
                 }
             }
         }
