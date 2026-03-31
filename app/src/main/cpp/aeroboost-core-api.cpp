@@ -17,21 +17,26 @@ struct Plane {
 // База данных самолетов
 std::vector<Plane> planes = {
         // id, name,      image,    base, price/ед., макс, куплено, C/S за ед.
-        {0, "1. Stipa",   "plane1",  50,   10,   0,   1, "airplane001"},
-        {1, "2. SuperMarin",   "plane2",  200,  50,  0,   5, "airplane001"},
-        {2, "3. Mikoy",   "plane3",  500,  100,   0,   15, "airplane001"},
+        {0, "1. Stipa",   "plane1",  100,   10,   0,   5, "airplane001"},
+        {1, "2. SuperMarin",   "plane2",  300,  20,  0,   10, "airplane001"},
+        {2, "3. Mikoy",   "plane3",  500,  100,   0,   20, "airplane001"},
         {3, "4. Yako",   "plane4",  1000, 250, 0,   40, "blockplane4"},
-        {4, "5. Voughtent",   "plane5",  2500, 500, 0,   100, "blockplane5"},
-        {5, "6. Bufaloo",   "plane6",  5000, 1000, 0,   250, "blockplane6"},
-        {6, "7. Brew",   "plane7",  10000,2000, 0,   600, "blockplane7"},
-        {7, "8. Gruman",   "plane8",  25000,5000, 0,   1500, "blockplane8"},
-        {8, "9. Flyer-1",   "plane9",  50000,10000, 0,   4000, "blockplane9"},
-        {9, "10. Flyer-2",  "plane10", 100000,25000, 0,   10000, "blockplane10"}
+        {4, "5. Voughtent",   "plane5",  2500, 500, 0,   80, "blockplane5"},
+        {5, "6. Bufaloo",   "plane6",  5000, 1000, 0,   160, "blockplane6"},
+        {6, "7. Brew",   "plane7",  10000,2000, 0,   320, "blockplane7"},
+        {7, "8. Gruman",   "plane8",  25000,5000, 0,   640, "blockplane8"},
+        {8, "9. Flyer-1",   "plane9",  50000,10000, 0,   1280, "blockplane9"},
+        {9, "10. Flyer-2",  "plane10", 100000,25000, 0,   2560, "blockplane10"}
 };
 
 // Рассчитать текущую цену для самолета
 int calculateCurrentPrice(const Plane& plane) {
-    return plane.basePrice + (plane.currentPurchased * plane.pricePerUnit);
+    if (plane.currentPurchased == 0) {
+        return plane.basePrice;
+    }
+    int prevPrice = plane.basePrice + (plane.currentPurchased * plane.pricePerUnit);
+    int plus = plane.pricePerUnit + plane.currentPurchased;
+    return prevPrice + plus;
 }
 
 // Рассчитать общий C/S для самолета

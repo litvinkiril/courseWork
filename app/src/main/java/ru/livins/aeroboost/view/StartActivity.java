@@ -19,16 +19,7 @@ public class StartActivity extends AppCompatActivity {
     }
 
     public void onStartGame(View view) {
-        // Открыть окно игры.
         var startGameDataIntent = new Intent(this, MainBoardActivity.class);
-        /*var startGameData = new GameModel("Andrej");
-        startGameDataIntent.putExtra(GameModel.class.getSimpleName(), startGameData);*/
         startActivity(startGameDataIntent);
-    }
-
-    public void onSettings(View view) {
-        Toast.makeText(StartActivity.this,
-                "Settings",
-                Toast.LENGTH_SHORT).show();
     }
 }

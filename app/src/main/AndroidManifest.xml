@@ -28,6 +28,7 @@
             android:name=".view.ShopActivity"
             android:exported="false">
         </activity>
+        <activity android:name=".view.SettingActivity" />
     </application>
 
 </manifest>

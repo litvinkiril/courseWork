@@ -5,23 +5,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:gravity="center_horizontal"
+    android:background="@drawable/aeroboost_preview"
     tools:context=".view.StartActivity">
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_margin="20pt"
-        android:text="Настройки"
-        android:onClick="onSettings"/>
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <Button
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_margin="20pt"
+        android:layout_margin="20dp"
+        android:layout_marginBottom="40dp"
         android:text="Начать игру"
-        android:onClick="onStartGame"/>
+        android:onClick="onStartGame"
+        android:backgroundTint="#4CAF50"
+        android:textColor="@android:color/white"
+        android:paddingLeft="32dp"
+        android:paddingRight="32dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:textSize="18sp" />
+
 </LinearLayout>

@@ -90,8 +90,9 @@ public class GameGridAdapter extends BaseAdapter {
         int fromCol = fromPosition % 2;
         int toRow = toPosition / 2;
         int toCol = toPosition % 2;
+        int prev = grid[toRow][toCol];
         grid[toRow][toCol] = grid[fromRow][fromCol];
-        grid[fromRow][fromCol] = 0;
+        grid[fromRow][fromCol] = prev;
         notifyDataSetChanged();
     }
     public void throwOutPlane(int fromPosition) {

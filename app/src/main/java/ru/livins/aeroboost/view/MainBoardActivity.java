@@ -34,6 +34,8 @@ public class MainBoardActivity extends AppCompatActivity {
     private ImageButton btnBuyPlane;
     private ImageButton btnShop;
 
+    private ImageButton btnSettings;
+
     // Adapters and Models
     private GameGridAdapter gridAdapter;
     private RunningPlane[][] gridPlanes = new RunningPlane[4][2];
@@ -68,7 +70,7 @@ public class MainBoardActivity extends AppCompatActivity {
         rubbish = findViewById(R.id.rubbishImage);
         btnBuyPlane = findViewById(R.id.btnBuyPlane);
         btnShop = findViewById(R.id.btnShop);
-
+        btnSettings = findViewById(R.id.btnSettings);
         // Настройка адаптера
         gridAdapter = new GameGridAdapter(this);
         gridView.setAdapter(gridAdapter);
@@ -216,6 +218,11 @@ public class MainBoardActivity extends AppCompatActivity {
         btnBuyPlane.setOnClickListener(v -> {
             // TODO: Реализовать покупку самолета
             Toast.makeText(this, "Купить самолет", Toast.LENGTH_SHORT).show();
+        });
+
+        btnSettings.setOnClickListener(v -> {
+            Intent intent = new Intent(MainBoardActivity.this, SettingActivity.class);
+            startActivity(intent);
         });
     }
 

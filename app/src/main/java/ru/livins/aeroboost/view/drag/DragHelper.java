@@ -140,12 +140,8 @@ public class DragHelper {
 
             if (gridPlanes[targetRow][targetCol] == null && targetLevel == level) {
                 mergePlane(startRow * 2 + startCol, targetRow * 2 + targetCol);
-                toastHelper.showToast("Самолеты объединены!");
-            } else if (gridPlanes[targetRow][targetCol] == null && targetLevel == 0) {
+            } else if (gridPlanes[targetRow][targetCol] == null) {
                 movePlane(startRow * 2 + startCol, targetRow * 2 + targetCol);
-                toastHelper.showToast("Самолет перемещен в ячейку [" + targetRow + "," + targetCol + "]");
-            } else {
-                toastHelper.showToast("Ячейка занята!");
             }
             return true;
         }

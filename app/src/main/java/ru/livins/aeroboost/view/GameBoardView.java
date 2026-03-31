@@ -59,8 +59,8 @@ public class GameBoardView extends View {
 
     private final int[] planeResIds = new int[]{
             R.drawable.plane1board, R.drawable.plane2board, R.drawable.plane3board,
-            R.drawable.plane4, R.drawable.plane5, R.drawable.plane6, R.drawable.plane7,
-            R.drawable.plane8, R.drawable.plane9, R.drawable.plane10
+            R.drawable.plane4, R.drawable.plane5board, R.drawable.plane6board, R.drawable.plane7board,
+            R.drawable.plane8board, R.drawable.plane9board, R.drawable.plane10board
     };
 
     // Массив картинок для разметки трассы
