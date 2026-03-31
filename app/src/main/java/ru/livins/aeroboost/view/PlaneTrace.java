@@ -68,4 +68,8 @@ public class PlaneTrace {
         if (index >= positions.size()) index = positions.size() - 1;
         return positions.get(index);
     }
+    // В классе PlaneTrace добавьте этот метод:
+    public List<TracePosition> getAllPositions() {
+        return new ArrayList<>(positions);
+    }
 }

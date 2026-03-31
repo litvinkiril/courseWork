@@ -11,7 +11,7 @@ public class GameState implements Serializable {
     }
     public void setUserName(String value) { userName = value; }
 
-    private double totalCoins = 100000;
+    private double totalCoins = 10000;
     public double getTotalCoins() { return totalCoins; }
     public void setTotalCoins(double value) { totalCoins = value; }
 

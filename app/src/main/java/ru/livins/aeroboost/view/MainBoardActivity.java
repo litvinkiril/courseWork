@@ -43,7 +43,7 @@ public class MainBoardActivity extends AppCompatActivity {
     private DragHelper dragHelper;
     private RubbishHandler rubbishHandler;
     private ToastHelper toastHelper;
-
+    private char[] letters = new char[]{'k', 'm'};
     private static native double countCpsPerSecond(int planeId);
 
     @Override
@@ -155,6 +155,7 @@ public class MainBoardActivity extends AppCompatActivity {
         });
     }
 
+
     private void setupClickListeners() {
         // Короткое нажатие на ячейку
         gridView.setOnItemClickListener((parent, view, position, id) -> {
@@ -225,7 +226,20 @@ public class MainBoardActivity extends AppCompatActivity {
 
         viewModel.getTotalCoins().observe(this, value -> {
             var roundedValue = Math.round(value);
-            totalCoinsTextView.setText(String.valueOf(roundedValue));
+            int symbol = -1;
+            if (value >= 10000000) {
+                roundedValue /= 1000000;
+                symbol = 1;
+            }
+            else if (value >= 10000) {
+                roundedValue /= 1000;
+                symbol = 0;
+            }
+            String need = String.valueOf(roundedValue);
+            if (symbol != -1) {
+                need += letters[symbol];
+            }
+            totalCoinsTextView.setText(need);
         });
 
         viewModel.getGameBoardVersion().observe(this, value -> {
@@ -247,8 +261,6 @@ public class MainBoardActivity extends AppCompatActivity {
 
         totalProfitRateTextView.setText(String.format("%.2f", result));
     }
-
-    // Добавьте эти методы в MainBoardActivity
 
     private void showRubbish() {
         if (rubbish != null && rubbish.getVisibility() != View.VISIBLE) {
