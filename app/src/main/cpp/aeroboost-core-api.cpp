@@ -255,3 +255,23 @@ Java_ru_livins_aeroboost_view_MainBoardActivity_countCpsPerSecond(JNIEnv *env, j
     int coin = planes[plane_id].cpsPerUnit;
     return coin * planeSpeed;
 }
+extern "C"
+JNIEXPORT jdouble JNICALL
+Java_ru_livins_aeroboost_model_GameModel_tryBuyPlane(JNIEnv *env, jclass clazz, jint plane_id,
+                                                     jdouble current_balance) {
+    if (plane_id < 0 || plane_id >= planes.size()) {
+        return -1.0;
+    }
+
+    Plane& plane = planes[plane_id];
+    int price = calculateCurrentPrice(plane);
+
+    // Если денег хватает
+    if (current_balance >= price) {
+        plane.currentPurchased++;
+        jdouble newBalance = current_balance - price;
+        return newBalance;
+    }
+
+    return -1.0;
+}

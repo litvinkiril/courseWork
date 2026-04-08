@@ -159,16 +159,12 @@ public class MainBoardActivity extends AppCompatActivity {
 
 
     private void setupClickListeners() {
-        // Короткое нажатие на ячейку
         gridView.setOnItemClickListener((parent, view, position, id) -> {
             int row = position / 2;
             int col = position % 2;
             int levelPlaneOnCell = gridAdapter.getLevelPlane(position);
 
             if (levelPlaneOnCell > 0) {
-                // Добавление самолета
-                Toast.makeText(this, "Ячейка [" + row + "," + col + "]", Toast.LENGTH_SHORT).show();
-
                 var runningPlane = new RunningPlane();
                 runningPlane.setPlaneId(levelPlaneOnCell);
                 runningPlane.setOdometer(0);
@@ -256,7 +252,19 @@ public class MainBoardActivity extends AppCompatActivity {
 
     private void updateProfit(int level, boolean isAdding) {
         String text = totalProfitRateTextView.getText().toString();
-        double value = Double.parseDouble(text);
+
+        // Защита от null, пустой строки и запятой вместо точки
+        double value = 0.0;
+        if (text != null && !text.isEmpty()) {
+            try {
+                // Заменяем запятую на точку
+                String normalized = text.replace(',', '.');
+                value = Double.parseDouble(normalized);
+            } catch (NumberFormatException e) {
+                value = 0.0;
+            }
+        }
+
         double nowProfit = countCpsPerSecond(level - 1);
 
         double result;

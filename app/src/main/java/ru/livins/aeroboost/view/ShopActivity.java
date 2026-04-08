@@ -115,7 +115,7 @@ public class ShopActivity extends AppCompatActivity
     // Обработка клика по самолету - покупка
     @Override
     public void onPlaneClick(int planeId) {
-        Log.d(TAG, "Кнопка BUY нажата для самолета: " + planeId);
+        Log.d(TAG, "Покупка самолета: " + planeId);
         GameGridAdapter gameGrid = GameGridAdapter.getInstance();
         int[][] myGrid = gameGrid.getGrid();
         int emptyCell = gameGrid.foundEmptyCell();
@@ -123,20 +123,16 @@ public class ShopActivity extends AppCompatActivity
             Toast.makeText(this, "Доска заполнена!", Toast.LENGTH_SHORT).show();
             return;
         }
-        GameState currentState = gameModel.gameStateObservable.getState();
-        double currentBalance = currentState.getTotalCoins();
         if (planeId >= 3 && getPlanePurchased(planeId - 1) == 0) {
             Toast.makeText(this, "Откройте предыдущий самолет!", Toast.LENGTH_SHORT).show();
             return;
         }
+        boolean success = gameModel.buyPlane(planeId);
 
-        double result = tryBuyPlane(planeId, currentBalance);
-
-        if (result >= 0) {
-            Toast.makeText(this, "Самолет куплен!", Toast.LENGTH_SHORT).show();
-            currentState.setTotalCoins(result);
+        if (success) {
+            Toast.makeText(this, "Куплено!", Toast.LENGTH_SHORT).show();
             updatePlaneData(planeId);
-            myGrid[emptyCell/ 2][emptyCell % 2] = planeId + 1;
+            myGrid[emptyCell / 2][emptyCell % 2] = planeId + 1;
             gameGrid.notifyDataSetChanged();
             adapter.notifyDataSetChanged();
         } else {

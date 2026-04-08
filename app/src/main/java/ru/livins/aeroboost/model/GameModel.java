@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class GameModel {
 
     private static native GameState doGameStep(GameState prevState);
+    private static native double tryBuyPlane(int planeId, double currentBalance);
 
     private static GameModel theInstance = null;
 
@@ -90,6 +91,24 @@ public class GameModel {
         gameStateObservable.updateState(state);
     }
 
+    public void setBalance(double newBalance) {
+        state.setTotalCoins(newBalance);
+        // Заставляем C++ узнать о новом балансе
+        state = doGameStep(state);
+        // Уведомляем UI
+        gameStateObservable.updateState(state);
+    }
+
+    public boolean buyPlane(int planeId) {
+        double currentBalance = state.getTotalCoins();
+        double result = tryBuyPlane(planeId, currentBalance);
+
+        if (result >= 0) {
+            setBalance(result);
+            return true;
+        }
+        return false;
+    }
     public boolean isGameRunning() {
         return gameRunning;
     }

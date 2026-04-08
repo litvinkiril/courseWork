@@ -121,7 +121,6 @@ public class DragHelper {
         float dropY = event.getY();
 
         int targetPosition = getPositionFromCoordinates(dropX, dropY);
-        toastHelper.showToast("targetPosition: " + targetPosition);
 
         if (targetPosition == -2) {
             deletePlane(startRow, startCol, level);
