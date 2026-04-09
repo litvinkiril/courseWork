@@ -35,7 +35,7 @@ int calculateCurrentPrice(const Plane& plane) {
         return plane.basePrice;
     }
     int prevPrice = plane.basePrice + (plane.currentPurchased * plane.pricePerUnit);
-    int plus = plane.pricePerUnit + plane.currentPurchased;
+    int plus = plane.currentPurchased;
     return prevPrice + plus;
 }
 
@@ -266,7 +266,7 @@ Java_ru_livins_aeroboost_model_GameModel_tryBuyPlane(JNIEnv *env, jclass clazz, 
     Plane& plane = planes[plane_id];
     int price = calculateCurrentPrice(plane);
 
-    // Если денег хватает
+
     if (current_balance >= price) {
         plane.currentPurchased++;
         jdouble newBalance = current_balance - price;
@@ -274,4 +274,28 @@ Java_ru_livins_aeroboost_model_GameModel_tryBuyPlane(JNIEnv *env, jclass clazz, 
     }
 
     return -1.0;
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_ru_livins_aeroboost_view_MainBoardActivity_getPlaneCost(JNIEnv *env, jclass clazz,
+                                                             jint plane_id) {
+    Plane& plane = planes[plane_id];
+    double cost = calculateCurrentPrice(plane);
+    jint inCost = static_cast<jint>(cost);
+    return inCost;
+}
+extern "C"
+JNIEXPORT jint JNICALL
+Java_ru_livins_aeroboost_view_MainBoardActivity_getPlaneLevel(JNIEnv *env, jclass clazz) {
+    int level = 1;
+    for (int i = planes.size() - 1; i > 0; --i) {
+        if (planes[i].currentPurchased != 0) {
+            if (i - 1 > 0) {
+                level = i - 1;
+            }
+            break;
+        }
+    }
+    return level;
 }

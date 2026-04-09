@@ -18,6 +18,16 @@ public class GameModel {
 
     private static GameModel theInstance = null;
 
+    public interface BuyPlaneListener {
+        void onPlaneBought();
+    }
+
+    private BuyPlaneListener buyPlaneListener;
+
+    public void setBuyPlaneListener(BuyPlaneListener listener) {
+        this.buyPlaneListener = listener;
+    }
+
     public static GameModel getInstance() {
         if (theInstance == null) {
             System.loadLibrary("aeroboost-core");
@@ -105,6 +115,9 @@ public class GameModel {
 
         if (result >= 0) {
             setBalance(result);
+            if (buyPlaneListener != null) {
+                buyPlaneListener.onPlaneBought();
+            }
             return true;
         }
         return false;
