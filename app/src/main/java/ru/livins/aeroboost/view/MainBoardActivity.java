@@ -251,8 +251,24 @@ public class MainBoardActivity extends AppCompatActivity {
         });
 
         btnBuyPlane.setOnClickListener(v -> {
-            // Временно просто показываем сообщение
-            Toast.makeText(this, "Покупка самолета (в разработке)", Toast.LENGTH_SHORT).show();
+            GameGridAdapter gameGrid = GameGridAdapter.getInstance();
+            int[][] myGrid = gameGrid.getGrid();
+            int planeLevel = getPlaneLevel();
+            int planeId = planeLevel - 1;
+            int emptyCell = gameGrid.foundEmptyCell();
+            if (emptyCell == -1) {
+                Toast.makeText(this, "Доска заполнена!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            boolean success = gameModel.buyPlane(planeId);
+
+            if (success) {
+                Toast.makeText(this, "Куплено!", Toast.LENGTH_SHORT).show();
+                myGrid[emptyCell / 2][emptyCell % 2] = planeId + 1;
+                gameGrid.notifyDataSetChanged();
+            } else {
+                Toast.makeText(this, "Недостаточно средств!", Toast.LENGTH_SHORT).show();
+            }
         });
 
         btnSettings.setOnClickListener(v -> {
