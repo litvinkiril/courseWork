@@ -34,8 +34,11 @@ int calculateCurrentPrice(const Plane& plane) {
     if (plane.currentPurchased == 0) {
         return plane.basePrice;
     }
+    int plus = 0;
+    for (int i = 1; i <= plane.currentPurchased; ++i) {
+        plus += i;
+    }
     int prevPrice = plane.basePrice + (plane.currentPurchased * plane.pricePerUnit);
-    int plus = plane.currentPurchased;
     return prevPrice + plus;
 }
 
