@@ -42,7 +42,7 @@ public class MainBoardActivity extends AppCompatActivity {
     private GridView gridView;
     private ImageView rubbish;
     private LinearLayout btnBuyPlane;
-    private ImageView  buyPlaneImageButton;
+    private ImageView buyPlaneImageButton;
     private TextView buyPlanePrice;
     private TextView buyPlaneLevel;
     private ImageButton btnShop;

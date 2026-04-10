@@ -59,7 +59,7 @@ public class GameBoardView extends View {
 
     private final int[] planeResIds = new int[]{
             R.drawable.plane1board, R.drawable.plane2board, R.drawable.plane3board,
-            R.drawable.plane4, R.drawable.plane5board, R.drawable.plane6board, R.drawable.plane7board,
+            R.drawable.plane4board, R.drawable.plane5board, R.drawable.plane6board, R.drawable.plane7board,
             R.drawable.plane8board, R.drawable.plane9board, R.drawable.plane10board
     };
 
