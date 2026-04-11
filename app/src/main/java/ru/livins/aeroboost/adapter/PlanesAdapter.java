@@ -109,8 +109,8 @@ public class PlanesAdapter extends ArrayAdapter<PlaneItem> {
             Log.d("PlanesAdapter", "Looking for image: " + cleanName);
 
             return getContext().getResources().getIdentifier(
-                    cleanName,         // имя файла БЕЗ расширения
-                    "drawable",        // тип ресурса
+                    cleanName,
+                    "drawable",
                     getContext().getPackageName()
             );
         } catch (Exception e) {

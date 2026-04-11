@@ -26,6 +26,46 @@
         android:gravity="center"
         android:layout_marginBottom="32dp" />
 
+    <!-- Секция смены имени -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#2d2d44"
+        android:padding="16dp"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Имя игрока"
+            android:textColor="#FFD700"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/tvCurrentName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Player"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:padding="12dp"
+            android:background="#3d3d55"
+            android:layout_marginBottom="12dp" />
+
+        <Button
+            android:id="@+id/btnChangeName"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Change name"
+            android:textAllCaps="false"
+            android:textColor="#1a1a2e"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
     <!-- Заглушка для будущих настроек -->
     <TextView
         android:layout_width="match_parent"

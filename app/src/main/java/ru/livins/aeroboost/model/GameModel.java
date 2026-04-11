@@ -33,7 +33,7 @@ public class GameModel {
             System.loadLibrary("aeroboost-core");
 
             var initialState = new GameState();
-            initialState.setUserName("Andrej");
+            initialState.setUserName("User_123");
             initialState.setGameSpeed(0.0);
             initialState.setRunningPlanes(new ArrayList<>());
 
@@ -122,7 +122,10 @@ public class GameModel {
         }
         return false;
     }
-    public boolean isGameRunning() {
-        return gameRunning;
+    public String getUserName() {
+        return state.getUserName();
+    }
+    public void setUserName(String nowName) {
+        state.setUserName(nowName);
     }
 }
