@@ -128,4 +128,9 @@ public class GameModel {
     public void setUserName(String nowName) {
         state.setUserName(nowName);
     }
+    public void clearGame() {
+        state.setUserName("user_123");
+        state.setTotalCoins(10000);
+        state.setRunningPlanes(new ArrayList<>());
+    }
 }

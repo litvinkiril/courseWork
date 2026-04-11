@@ -302,3 +302,10 @@ Java_ru_livins_aeroboost_view_MainBoardActivity_getPlaneLevel(JNIEnv *env, jclas
     }
     return level;
 }
+extern "C"
+JNIEXPORT jint JNICALL
+Java_ru_livins_aeroboost_view_MainBoardActivity_clearCurPurchased(JNIEnv *env, jclass clazz) {
+    for (int i = 0; i < planes.size(); ++i) {
+        planes[i].currentPurchased = 0;
+    }
+}

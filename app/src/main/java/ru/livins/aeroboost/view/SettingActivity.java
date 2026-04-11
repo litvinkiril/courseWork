@@ -19,6 +19,7 @@ public class SettingActivity extends AppCompatActivity {
 
     private TextView tvCurrentName;
     private Button btnChangeName;
+    private Button btnClearGame;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,13 +28,15 @@ public class SettingActivity extends AppCompatActivity {
 
         tvCurrentName = findViewById(R.id.tvCurrentName);
         btnChangeName = findViewById(R.id.btnChangeName);
-
+        btnClearGame = findViewById(R.id.btnClearGame);
         updateCurrentNameDisplay();
 
         btnChangeName.setOnClickListener(v -> {
             showChangeNameDialog();
         });
-
+        btnClearGame.setOnClickListener(v -> {
+            showClearGameDialog();
+        });
         ImageButton btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> {
             finish();
@@ -57,7 +60,6 @@ public class SettingActivity extends AppCompatActivity {
         etNewName.setText(currentName);
         etNewName.setSelection(currentName.length());
 
-        // Просто создаем AlertDialog без стиля
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(dialogView);
 
@@ -76,6 +78,9 @@ public class SettingActivity extends AppCompatActivity {
                 Toast.makeText(this, "Имя не может быть пустым", Toast.LENGTH_SHORT).show();
                 return;
             }
+            if (etNewName.length() > 20) {
+                Toast.makeText(this, "Имя не может быть длиннее 20 символов", Toast.LENGTH_SHORT).show();
+            }
             GameModel.getInstance().setUserName(newName);
 
             updateCurrentNameDisplay();
@@ -83,5 +88,29 @@ public class SettingActivity extends AppCompatActivity {
 
             dialog.dismiss();
         });
+    }
+
+    private void showClearGameDialog() {
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_clear_game, null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(dialogView);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        Button btnCancel = dialogView.findViewById(R.id.btnCancel);
+        Button btnSave = dialogView.findViewById(R.id.btnDelete);
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        btnSave.setOnClickListener(v -> {
+            clearAllGame();
+        });
+    }
+
+    private void clearAllGame() {
+        MainBoardActivity.clearGameBoard();
     }
 }

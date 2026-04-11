@@ -150,4 +150,12 @@ public class GameGridAdapter extends BaseAdapter {
     public boolean isOccupied(int row, int col) {
         return grid[row][col] != 0;
     }
+
+    public void deleteAllPlane() {
+        for (int row = 0; row < 4; ++row) {
+            for (int col = 0; col < 2; ++col) {
+                grid[row][col] = 0;
+            }
+        }
+    }
 }

@@ -28,13 +28,20 @@ import ru.livins.aeroboost.viewmodel.MainBoardViewModel;
 
 public class MainBoardActivity extends AppCompatActivity {
 
-    private static native double countCpsPerSecond(int planeId);
+    private static MainBoardActivity instance;
 
+    // ==================== NATIVE METHODS ====================
+    private static native double countCpsPerSecond(int planeId);
     private static native int getPlaneLevel();
     private static native int getPlaneCost(int planeId);
+    private static native int clearCurPurchased();
 
+    // ==================== CONSTANTS ====================
+    private static final char[] LETTERS = new char[]{'K', 'M', 'B', 't'};
+    private static final int GRID_ROWS = 4;
+    private static final int GRID_COLS = 2;
 
-    // UI Components
+    // ==================== UI COMPONENTS ====================
     private TextView userNameTextView;
     private TextView totalProfitRateTextView;
     private TextView totalCoinsTextView;
@@ -48,62 +55,42 @@ public class MainBoardActivity extends AppCompatActivity {
     private ImageButton btnShop;
     private ImageButton btnSettings;
 
-    // Models
+    // ==================== MODELS & ADAPTERS ====================
     private GameModel gameModel;
     private GameGridAdapter gridAdapter;
-    private RunningPlane[][] gridPlanes = new RunningPlane[4][2];
+    private RunningPlane[][] gridPlanes = new RunningPlane[GRID_ROWS][GRID_COLS];
     private MainBoardViewModel viewModel;
 
-    // Helpers
+    // ==================== HELPERS ====================
     private DragHelper dragHelper;
     private RubbishHandler rubbishHandler;
     private ToastHelper toastHelper;
-    private char[] letters = new char[]{'k', 'm'};
 
+    // ==================== LIFECYCLE ====================
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        instance = this;
         setContentView(R.layout.main_board_activity);
 
-        gameModel = GameModel.getInstance();
-        gameModel.setBuyPlaneListener(() -> {
-            runOnUiThread(() -> setImageBuyBtn());
-        });
-
-        initViews();
-        initViewModel();
-        initDragAndDrop();
+        initializeGameModel();
+        initializeViews();
+        initializeViewModel();
+        initializeHelpers();
+        initializeDragAndDrop();
         setupClickListeners();
         setupViewModelObservers();
-        try {
-            setImageBuyBtn();
-        } catch (Exception e) {
-            setDefaultBuyButton();
-        }
-
+        initializeBuyButton();
     }
 
-    private void setImageBuyBtn() {
-        int planeLevel = getPlaneLevel();
-        int planeId = planeLevel - 1;
-        int cost = getPlaneCost(planeId);
-        String level = "lvl. " + planeLevel;
-        String imageName = "plane" + planeLevel;
-        int imageResId = getResources().getIdentifier(imageName, "drawable", getPackageName());
+    // ==================== INITIALIZATION ====================
 
-        if (imageResId != 0) {
-            buyPlaneImageButton.setImageResource(imageResId);
-        } else {
-            buyPlaneImageButton.setImageResource(R.drawable.plane2);
-        }
-
-        buyPlanePrice.setText(String.valueOf(cost));
-        buyPlaneLevel.setText(level);
-        btnBuyPlane.setAlpha(1.0f);
-        btnBuyPlane.setClickable(true);
+    private void initializeGameModel() {
+        gameModel = GameModel.getInstance();
+        gameModel.setBuyPlaneListener(() -> runOnUiThread(this::setImageBuyBtn));
     }
 
-    private void initViews() {
+    private void initializeViews() {
         userNameTextView = findViewById(R.id.userName);
         totalProfitRateTextView = findViewById(R.id.totalProfitRate);
         totalCoinsTextView = findViewById(R.id.totalCoins);
@@ -119,24 +106,53 @@ public class MainBoardActivity extends AppCompatActivity {
 
         gridAdapter = new GameGridAdapter(this);
         gridView.setAdapter(gridAdapter);
+    }
 
+    private void initializeViewModel() {
+        viewModel = new ViewModelProvider(this).get(MainBoardViewModel.class);
+    }
+
+    private void initializeHelpers() {
         toastHelper = new ToastHelper(this);
         rubbishHandler = new RubbishHandler(rubbish, gridView);
+    }
+
+    private void initializeBuyButton() {
+        try {
+            setImageBuyBtn();
+        } catch (Exception e) {
+            setDefaultBuyButton();
+        }
+    }
+
+    // ==================== BUY BUTTON MANAGEMENT ====================
+
+    private void setImageBuyBtn() {
+        int planeLevel = getPlaneLevel();
+        int planeId = planeLevel - 1;
+        int cost = getPlaneCost(planeId);
+        String level = "lvl. " + planeLevel;
+        String imageName = "plane" + planeLevel;
+        int imageResId = getResources().getIdentifier(imageName, "drawable", getPackageName());
+
+        buyPlaneImageButton.setImageResource(imageResId != 0 ? imageResId : R.drawable.plane2);
+        buyPlanePrice.setText(String.valueOf(cost));
+        buyPlaneLevel.setText(level);
+        btnBuyPlane.setAlpha(1.0f);
+        btnBuyPlane.setClickable(true);
     }
 
     private void setDefaultBuyButton() {
         buyPlaneImageButton.setImageResource(R.drawable.plane1);
         buyPlanePrice.setText("100");
-        buyPlaneLevel.setText("lvl 1");  // Уровень по умолчанию
+        buyPlaneLevel.setText("lvl 1");
         btnBuyPlane.setAlpha(1.0f);
         btnBuyPlane.setClickable(true);
     }
 
-    private void initViewModel() {
-        viewModel = new ViewModelProvider(this).get(MainBoardViewModel.class);
-    }
+    // ==================== DRAG & DROP ====================
 
-    private void initDragAndDrop() {
+    private void initializeDragAndDrop() {
         dragHelper = new DragHelper(
                 gridView,
                 gridAdapter,
@@ -147,24 +163,31 @@ public class MainBoardActivity extends AppCompatActivity {
                 toastHelper
         );
 
+        setupGridDragListener();
+        setupRubbishDragListener();
+    }
+
+    private void setupGridDragListener() {
         gridView.setOnDragListener((v, event) -> {
             switch (event.getAction()) {
                 case DragEvent.ACTION_DRAG_STARTED:
                     showRubbish();
                     return true;
+
                 case DragEvent.ACTION_DRAG_ENTERED:
-                    dragHelper.updateHighlight(event);
-                    return true;
                 case DragEvent.ACTION_DRAG_LOCATION:
                     dragHelper.updateHighlight(event);
                     return true;
+
                 case DragEvent.ACTION_DRAG_EXITED:
                     dragHelper.clearHighlights();
                     return true;
+
                 case DragEvent.ACTION_DROP:
                     dragHelper.clearHighlights();
                     dragHelper.handleDrop(event);
                     return true;
+
                 case DragEvent.ACTION_DRAG_ENDED:
                     dragHelper.clearHighlights();
                     hideRubbish();
@@ -172,29 +195,26 @@ public class MainBoardActivity extends AppCompatActivity {
             }
             return false;
         });
+    }
 
+    private void setupRubbishDragListener() {
         rubbish.setOnDragListener((v, event) -> {
             switch (event.getAction()) {
                 case DragEvent.ACTION_DRAG_STARTED:
                     return true;
+
                 case DragEvent.ACTION_DRAG_ENTERED:
                     rubbishHandler.highlight(true);
                     return true;
+
                 case DragEvent.ACTION_DRAG_EXITED:
                     rubbishHandler.highlight(false);
                     return true;
+
                 case DragEvent.ACTION_DROP:
-                    toastHelper.showToast("Самолет удален!");
-                    ClipData clipData = event.getClipData();
-                    if (clipData != null) {
-                        String data = clipData.getItemAt(0).getText().toString();
-                        String[] parts = data.split(",");
-                        int startRow = Integer.parseInt(parts[0]);
-                        int startCol = Integer.parseInt(parts[1]);
-                        gridAdapter.throwOutPlane(startRow * 2 + startCol);
-                    }
-                    rubbishHandler.highlight(false);
+                    handleRubbishDrop(event);
                     return true;
+
                 case DragEvent.ACTION_DRAG_ENDED:
                     rubbishHandler.highlight(false);
                     return true;
@@ -203,36 +223,70 @@ public class MainBoardActivity extends AppCompatActivity {
         });
     }
 
+    private void handleRubbishDrop(DragEvent event) {
+        toastHelper.showToast("Самолет удален!");
+        ClipData clipData = event.getClipData();
+
+        if (clipData != null) {
+            String data = clipData.getItemAt(0).getText().toString();
+            String[] parts = data.split(",");
+            int startRow = Integer.parseInt(parts[0]);
+            int startCol = Integer.parseInt(parts[1]);
+            gridAdapter.throwOutPlane(startRow * 2 + startCol);
+        }
+
+        rubbishHandler.highlight(false);
+    }
+
+    // ==================== CLICK LISTENERS ====================
+
     private void setupClickListeners() {
+        setupGridItemClickListener();
+        setupGridItemLongClickListener();
+        setupNavigationListeners();
+        setupBuyPlaneListener();
+    }
+
+    private void setupGridItemClickListener() {
         gridView.setOnItemClickListener((parent, view, position, id) -> {
             int row = position / 2;
             int col = position % 2;
             int levelPlaneOnCell = gridAdapter.getLevelPlane(position);
 
             if (levelPlaneOnCell > 0) {
-                var runningPlane = new RunningPlane();
-                runningPlane.setPlaneId(levelPlaneOnCell);
-                runningPlane.setOdometer(0);
-                runningPlane.setSpeed(0.2 * Math.pow(1.1, levelPlaneOnCell - 1));
-                gridPlanes[row][col] = runningPlane;
-                viewModel.onPlaneAdded(runningPlane);
-                gameBoardView.addRunningPlane(runningPlane);
-                gridAdapter.cellClicked(position);
-                updateProfit(levelPlaneOnCell, true);
-            }
-
-            if (levelPlaneOnCell < 0) {
-                RunningPlane planeToRemove = gridPlanes[row][col];
-                if (planeToRemove != null) {
-                    viewModel.onPlaneRemoved(planeToRemove);
-                    gameBoardView.removeRunningPlane(planeToRemove);
-                    gridAdapter.cellClicked(position);
-                    gridPlanes[row][col] = null;
-                    updateProfit(Math.abs(levelPlaneOnCell), false);
-                }
+                addPlaneToCell(row, col, levelPlaneOnCell, position);
+            } else if (levelPlaneOnCell < 0) {
+                removePlaneFromCell(row, col, levelPlaneOnCell, position);
             }
         });
+    }
 
+    private void addPlaneToCell(int row, int col, int levelPlaneOnCell, int position) {
+        RunningPlane runningPlane = new RunningPlane();
+        runningPlane.setPlaneId(levelPlaneOnCell);
+        runningPlane.setOdometer(0);
+        runningPlane.setSpeed(0.2 * Math.pow(1.1, levelPlaneOnCell - 1));
+
+        gridPlanes[row][col] = runningPlane;
+        viewModel.onPlaneAdded(runningPlane);
+        gameBoardView.addRunningPlane(runningPlane);
+        gridAdapter.cellClicked(position);
+        updateProfit(levelPlaneOnCell, true);
+    }
+
+    private void removePlaneFromCell(int row, int col, int levelPlaneOnCell, int position) {
+        RunningPlane planeToRemove = gridPlanes[row][col];
+
+        if (planeToRemove != null) {
+            viewModel.onPlaneRemoved(planeToRemove);
+            gameBoardView.removeRunningPlane(planeToRemove);
+            gridAdapter.cellClicked(position);
+            gridPlanes[row][col] = null;
+            updateProfit(Math.abs(levelPlaneOnCell), false);
+        }
+    }
+
+    private void setupGridItemLongClickListener() {
         gridView.setOnItemLongClickListener((parent, view, position, id) -> {
             int row = position / 2;
             int col = position % 2;
@@ -244,22 +298,31 @@ public class MainBoardActivity extends AppCompatActivity {
             }
             return false;
         });
+    }
 
-        btnShop.setOnClickListener(v -> {
-            Intent intent = new Intent(MainBoardActivity.this, ShopActivity.class);
-            startActivity(intent);
-        });
+    private void setupNavigationListeners() {
+        btnShop.setOnClickListener(v ->
+                startActivity(new Intent(MainBoardActivity.this, ShopActivity.class))
+        );
 
+        btnSettings.setOnClickListener(v ->
+                startActivity(new Intent(MainBoardActivity.this, SettingActivity.class))
+        );
+    }
+
+    private void setupBuyPlaneListener() {
         btnBuyPlane.setOnClickListener(v -> {
             GameGridAdapter gameGrid = GameGridAdapter.getInstance();
             int[][] myGrid = gameGrid.getGrid();
             int planeLevel = getPlaneLevel();
             int planeId = planeLevel - 1;
             int emptyCell = gameGrid.foundEmptyCell();
+
             if (emptyCell == -1) {
                 Toast.makeText(this, "Доска заполнена!", Toast.LENGTH_SHORT).show();
                 return;
             }
+
             boolean success = gameModel.buyPlane(planeId);
 
             if (success) {
@@ -270,60 +333,77 @@ public class MainBoardActivity extends AppCompatActivity {
                 Toast.makeText(this, "Недостаточно средств!", Toast.LENGTH_SHORT).show();
             }
         });
-
-        btnSettings.setOnClickListener(v -> {
-            Intent intent = new Intent(MainBoardActivity.this, SettingActivity.class);
-            startActivity(intent);
-        });
     }
+
+    // ==================== VIEWMODEL OBSERVERS ====================
 
     private void setupViewModelObservers() {
-        viewModel.getUserName().observe(this, value -> {
-            userNameTextView.setText(value);
-        });
+        viewModel.getUserName().observe(this, value ->
+                userNameTextView.setText(value)
+        );
 
-        viewModel.getTotalCoins().observe(this, value -> {
-            var roundedValue = Math.round(value);
-            int symbol = -1;
-            if (value >= 10000000) {
-                roundedValue /= 1000000;
-                symbol = 1;
-            } else if (value >= 10000) {
-                roundedValue /= 1000;
-                symbol = 0;
-            }
-            String need = String.valueOf(roundedValue);
-            if (symbol != -1) {
-                need += letters[symbol];
-            }
-            totalCoinsTextView.setText(need);
-        });
+        viewModel.getTotalCoins().observe(this, this::updateCoinsDisplay);
 
-        viewModel.getGameBoardVersion().observe(this, value -> {
-            gameBoardView.invalidate();
-        });
+        viewModel.getGameBoardVersion().observe(this, value ->
+                gameBoardView.invalidate()
+        );
     }
 
-    private void updateProfit(int level, boolean isAdding) {
-        String text = totalProfitRateTextView.getText().toString();
-        double value = 0.0;
-        if (text != null && !text.isEmpty()) {
-            try {
-                String normalized = text.replace(',', '.');
-                value = Double.parseDouble(normalized);
-            } catch (NumberFormatException e) {
-                value = 0.0;
-            }
+    private void updateCoinsDisplay(double value) {
+        long  roundedValue = Math.round(value);
+        int symbol = -1;
+        if (value >= 10000000) {
+            roundedValue /= 1000000;
+            symbol = 1;
+        } else if (value >= 10000) {
+            roundedValue /= 1000;
+            symbol = 0;
         }
 
+        String displayText = String.valueOf(roundedValue);
+        if (symbol != -1) {
+            displayText += LETTERS[symbol];
+        }
+
+        totalCoinsTextView.setText(displayText);
+    }
+
+    // ==================== PROFIT MANAGEMENT ====================
+
+    private void updateProfit(int level, boolean isAdding) {
+        if (level == 0) {
+            double result = 0;
+            totalProfitRateTextView.setText(String.format("%.2f", result));
+            return;
+        }
+        if (level < 0 || level > 10) {
+            return;
+        }
+        String text = totalProfitRateTextView.getText().toString();
+        double currentValue = parseCurrentProfit(text);
         try {
             double nowProfit = countCpsPerSecond(level - 1);
-            double result = isAdding ? value + nowProfit : Math.abs(value - nowProfit);
+            double result = isAdding ? currentValue + nowProfit : Math.abs(currentValue - nowProfit);
             totalProfitRateTextView.setText(String.format("%.2f", result));
         } catch (Throwable t) {
             Log.e("MainBoard", "Error in countCpsPerSecond", t);
         }
     }
+
+    private double parseCurrentProfit(String text) {
+        if (text == null || text.isEmpty()) {
+            return 0.0;
+        }
+
+        try {
+            String normalized = text.replace(',', '.');
+            return Double.parseDouble(normalized);
+        } catch (NumberFormatException e) {
+            return 0.0;
+        }
+    }
+
+    // ==================== UI ANIMATIONS ====================
 
     private void showRubbish() {
         if (rubbish != null && rubbish.getVisibility() != View.VISIBLE) {
@@ -335,10 +415,40 @@ public class MainBoardActivity extends AppCompatActivity {
 
     private void hideRubbish() {
         if (rubbish != null && rubbish.getVisibility() == View.VISIBLE) {
-            rubbish.animate().alpha(0f).setDuration(200).withEndAction(() -> {
-                rubbish.setVisibility(View.GONE);
-                rubbishHandler.highlight(false);
-            }).start();
+            rubbish.animate()
+                    .alpha(0f)
+                    .setDuration(200)
+                    .withEndAction(() -> {
+                        rubbish.setVisibility(View.GONE);
+                        rubbishHandler.highlight(false);
+                    })
+                    .start();
         }
+    }
+
+    // =================== For DeleteAll ======================
+
+    public static void clearGameBoard() {
+        if (instance != null && instance.gameBoardView != null) {
+            instance.clearMainBoard();
+        }
+    }
+    public void clearMainBoard() {
+        //здесь мы только убираем все самолеты с трассы
+        for (int row = 0; row < GRID_ROWS; ++row) {
+            for (int col = 0; col < GRID_COLS; ++col) {
+                removePlaneFromCell(row, col, 0 , row * 2 + col);
+            }
+        }
+        //здесь мы зануляем все ячейки
+        for (int row = 0; row < GRID_ROWS; ++row) {
+            for (int col = 0; col < GRID_COLS; ++col) {
+                gridAdapter.deleteAllPlane();
+            }
+        }
+        //обнуляем количество купленных самолетов
+        clearCurPurchased();
+        //дальше работа с GameState
+        gameModel.clearGame();
     }
 }
