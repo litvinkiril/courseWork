@@ -28,7 +28,7 @@ import ru.livins.aeroboost.viewmodel.MainBoardViewModel;
 
 public class MainBoardActivity extends AppCompatActivity {
 
-    private static MainBoardActivity instance;
+    private static MainBoardActivity mainBoardinstance;
 
     // ==================== NATIVE METHODS ====================
     private static native double countCpsPerSecond(int planeId);
@@ -70,7 +70,7 @@ public class MainBoardActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        instance = this;
+        mainBoardinstance = this;
         setContentView(R.layout.main_board_activity);
 
         initializeGameModel();
@@ -254,6 +254,10 @@ public class MainBoardActivity extends AppCompatActivity {
             int levelPlaneOnCell = gridAdapter.getLevelPlane(position);
 
             if (levelPlaneOnCell > 0) {
+                if (levelPlaneOnCell > 10) {
+                    gridAdapter.openGiftBox(position);
+                    return;
+                }
                 addPlaneToCell(row, col, levelPlaneOnCell, position);
             } else if (levelPlaneOnCell < 0) {
                 removePlaneFromCell(row, col, levelPlaneOnCell, position);
@@ -429,8 +433,8 @@ public class MainBoardActivity extends AppCompatActivity {
     // =================== For DeleteAll ======================
 
     public static void clearGameBoard() {
-        if (instance != null && instance.gameBoardView != null) {
-            instance.clearMainBoard();
+        if (mainBoardinstance != null && mainBoardinstance.gameBoardView != null) {
+            mainBoardinstance.clearMainBoard();
         }
     }
     public void clearMainBoard() {

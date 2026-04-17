@@ -1,5 +1,8 @@
 package ru.livins.aeroboost.model;
 
+
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -15,9 +18,12 @@ public class GameModel {
 
     private static native GameState doGameStep(GameState prevState);
     private static native double tryBuyPlane(int planeId, double currentBalance);
+    private static native int nowGiftLevelPlane();
 
     private static GameModel theInstance = null;
 
+    int counter = 0;
+    int levelGiftPlane = 0;
     public interface BuyPlaneListener {
         void onPlaneBought();
     }
@@ -62,10 +68,15 @@ public class GameModel {
                         gameStateObservable.updateState(newState);
                         this.state = newState; // обновляем ссылку
                     }
-                    Thread.sleep(40); // 10 FPS (1000ms/10 = 100ms)
+                    Thread.sleep(40); // 25 FPS (1000ms/25 = 40ms)
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt(); // восстанавливаем статус прерывания
                     break;
+                }
+                counter++;
+                if (counter > 500) {
+                    counter = 0;
+                    levelGiftPlane = 10 + nowGiftLevelPlane();
                 }
             }
         });
@@ -132,5 +143,11 @@ public class GameModel {
         state.setUserName("user_123");
         state.setTotalCoins(10000);
         state.setRunningPlanes(new ArrayList<>());
+    }
+    public int getGiftPlane() {
+        return levelGiftPlane;
+    }
+    public void clearGiftPlane() {
+        levelGiftPlane = 0;
     }
 }

@@ -20,7 +20,9 @@ import java.util.List;
 import java.util.Map;
 
 import ru.livins.aeroboost.R;
+import ru.livins.aeroboost.adapter.GameGridAdapter;
 import ru.livins.aeroboost.model.RunningPlane;
+import ru.livins.aeroboost.model.GameModel;
 
 public class GameBoardView extends View {
 
@@ -30,6 +32,8 @@ public class GameBoardView extends View {
     private PlaneTrace planeTrace = null;
     private List<RunningPlane> runningPlanes = new ArrayList<>();
     private Bitmap flagBitmap;
+
+    private GameModel gameModel;
 
     // Кэш для точек трассы
     private List<PlaneTrace.TracePosition> cachedTracePositions;
@@ -73,6 +77,7 @@ public class GameBoardView extends View {
         rotatedPlaneCache = new HashMap<>();
         traceMarkupBitmaps = new ArrayList<>();
         loadBitmaps(context);
+        gameModel = GameModel.getInstance();
     }
 
 
@@ -240,7 +245,15 @@ public class GameBoardView extends View {
         }
 
         drawTraceMarkup(canvas);
-
+        int levelGiftPlane = gameModel.getGiftPlane();
+        if (levelGiftPlane != 0) {
+            GameGridAdapter grid = GameGridAdapter.getInstance();
+            int pos = grid.foundEmptyCell();
+            if (pos != -1) {
+                grid.setLevelOnCell(pos, levelGiftPlane);
+                gameModel.clearGiftPlane();
+            }
+        }
         // Рисуем самолеты
         if (!runningPlanes.isEmpty()) {
             List<RunningPlane> planesCopy = new ArrayList<>(runningPlanes);
@@ -317,33 +330,5 @@ public class GameBoardView extends View {
         }
     }
 
-    // Публичные методы для управления трассой
-    public void resetTrace() {
-        planeTrace = null;
-        tracePositionsChanged = true;
-        invalidate();
-    }
 
-    public void setTraceDimension(int dimension) {
-        if (traceDimension != dimension) {
-            traceDimension = dimension;
-            resetTrace();
-        }
-    }
-
-    public int getTraceDimension() {
-        return traceDimension;
-    }
-
-    // Публичные методы для получения информации
-    public PlaneTrace.TracePosition getPlanePosition(double odometer) {
-        if (planeTrace != null) {
-            return planeTrace.getPosition(odometer);
-        }
-        return null;
-    }
-
-    public boolean isTraceInitialized() {
-        return planeTrace != null;
-    }
 }

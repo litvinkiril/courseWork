@@ -309,3 +309,17 @@ Java_ru_livins_aeroboost_view_MainBoardActivity_clearCurPurchased(JNIEnv *env, j
         planes[i].currentPurchased = 0;
     }
 }
+extern "C"
+JNIEXPORT jint JNICALL
+Java_ru_livins_aeroboost_model_GameModel_nowGiftLevelPlane(JNIEnv *env, jclass clazz) {
+    int level = 1;
+    for (int i = planes.size() - 1; i > 0; --i) {
+        if (planes[i].currentPurchased != 0) {
+            if (i - 1 > 0) {
+                level = i - 1;
+            }
+            break;
+        }
+    }
+    return level;
+}

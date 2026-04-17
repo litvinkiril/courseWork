@@ -12,33 +12,29 @@ public class GameGridAdapter extends BaseAdapter {
     private final Context context;
     private final int[][] grid = new int[4][2];
 
+    private static final int[] PLANE_RESOURCES = {
+            R.drawable.plane1,
+            R.drawable.plane2,
+            R.drawable.plane3,
+            R.drawable.plane4,
+            R.drawable.plane5,
+            R.drawable.plane6,
+            R.drawable.plane7,
+            R.drawable.plane8,
+            R.drawable.plane9,
+            R.drawable.plane10
+    };
     private int getImageResource(int position) {
         int level = grid[position / 2][position % 2];
         int absLevel = Math.abs(level); // Берем абсолютное значение
-
-        switch (absLevel) {
-            case 1:
-                return R.drawable.plane1;
-            case 2:
-                return R.drawable.plane2;
-            case 3:
-                return R.drawable.plane3;
-            case 4:
-                return R.drawable.plane4;
-            case 5:
-                return R.drawable.plane5;
-            case 6:
-                return R.drawable.plane6;
-            case 7:
-                return R.drawable.plane7;
-            case 8:
-                return R.drawable.plane8;
-            case 9:
-                return R.drawable.plane9;
-            case 10:
-                return R.drawable.plane10;
-            default:
-                return android.R.color.transparent;
+        if (absLevel > 0 && absLevel < 11) {
+            return PLANE_RESOURCES[absLevel - 1];
+        }
+        else if (absLevel > 10) {
+            return R.drawable.giftbox;
+        }
+        else {
+            return android.R.color.transparent;
         }
     }
 
@@ -150,12 +146,19 @@ public class GameGridAdapter extends BaseAdapter {
     public boolean isOccupied(int row, int col) {
         return grid[row][col] != 0;
     }
-
+    public void setLevelOnCell(int pos, int level) {
+        grid[pos / 2][pos % 2] = level;
+        notifyDataSetChanged();
+    }
     public void deleteAllPlane() {
         for (int row = 0; row < 4; ++row) {
             for (int col = 0; col < 2; ++col) {
                 grid[row][col] = 0;
             }
         }
+    }
+    public void openGiftBox(int position) {
+        grid[position / 2][position%2] -= 10;
+        notifyDataSetChanged();
     }
 }
