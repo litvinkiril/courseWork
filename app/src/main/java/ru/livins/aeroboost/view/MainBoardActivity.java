@@ -29,12 +29,14 @@ import ru.livins.aeroboost.viewmodel.MainBoardViewModel;
 public class MainBoardActivity extends AppCompatActivity {
 
     private static MainBoardActivity mainBoardinstance;
+    SaveManager saveManager;
 
     // ==================== NATIVE METHODS ====================
     private static native double countCpsPerSecond(int planeId);
     private static native int getPlaneLevel();
     private static native int getPlaneCost(int planeId);
     private static native int clearCurPurchased();
+    private static native void restorePurchasedCounts(int[] array);
 
     // ==================== CONSTANTS ====================
     private static final char[] LETTERS = new char[]{'K', 'M', 'B', 't'};
@@ -71,8 +73,9 @@ public class MainBoardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mainBoardinstance = this;
-        setContentView(R.layout.main_board_activity);
+        saveManager = new SaveManager(this);
 
+        setContentView(R.layout.main_board_activity);
         initializeGameModel();
         initializeViews();
         initializeViewModel();
@@ -81,6 +84,9 @@ public class MainBoardActivity extends AppCompatActivity {
         setupClickListeners();
         setupViewModelObservers();
         initializeBuyButton();
+
+        // Загружаем после всей инициализации
+        gridView.post(() -> loadGameState());
     }
 
     // ==================== INITIALIZATION ====================
@@ -438,21 +444,105 @@ public class MainBoardActivity extends AppCompatActivity {
         }
     }
     public void clearMainBoard() {
-        //здесь мы только убираем все самолеты с трассы
+        // 1. Очищаем сохранение
+        saveManager.clearSave();
+
+        // 2. Убираем все самолеты с трассы
         for (int row = 0; row < GRID_ROWS; ++row) {
             for (int col = 0; col < GRID_COLS; ++col) {
-                removePlaneFromCell(row, col, 0 , row * 2 + col);
+                if (gridPlanes[row][col] != null) {
+                    viewModel.onPlaneRemoved(gridPlanes[row][col]);
+                    gameBoardView.removeRunningPlane(gridPlanes[row][col]);
+                    gridPlanes[row][col] = null;
+                }
             }
         }
-        //здесь мы зануляем все ячейки
+
+        // 3. Зануляем все ячейки в grid
+        GameGridAdapter gameGrid = GameGridAdapter.getInstance();
         for (int row = 0; row < GRID_ROWS; ++row) {
             for (int col = 0; col < GRID_COLS; ++col) {
-                gridAdapter.deleteAllPlane();
+                gameGrid.setCell(row, col, 0);
             }
         }
-        //обнуляем количество купленных самолетов
+        gameGrid.notifyDataSetChanged();
+
+        // 4. Обнуляем количество купленных самолетов в C++
         clearCurPurchased();
-        //дальше работа с GameState
+
+        // 5. Сбрасываем GameModel
         gameModel.clearGame();
+        gameModel.setBalance(1000.0);
+        gameModel.setUserName("Player");
+
+        // 6. Обновляем UI
+        totalProfitRateTextView.setText("0.00");
+        gameBoardView.invalidate();
+
+        // 7. Перезапускаем активити для полного сброса
+        Toast.makeText(this, "Прогресс сброшен", Toast.LENGTH_SHORT).show();
+
+        // Перезапуск
+        Intent intent = getIntent();
+        finish();
+        startActivity(intent);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        saveGameState();  // Сохраняем при сворачивании
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        saveGameState();  // Сохраняем при закрытии
+    }
+    private void saveGameState() {
+        GameGridAdapter gameGrid = GameGridAdapter.getInstance();
+        int[][] grid = gameGrid.getGrid();
+
+        int[] purchasedCounts = new int[10];
+        for (int i = 0; i < 10; i++) {
+            purchasedCounts[i] = ShopActivity.getPlanePurchased(i);
+        }
+
+        String playerName = gameModel.getUserName();
+        if (playerName == null) playerName = "Player";
+
+        double totalCoin = gameModel.getTotalCoins();
+
+        saveManager.saveGame(grid, purchasedCounts, playerName, totalCoin);
+    }
+
+    private void loadGameState() {
+        SaveManager.GameSaveData data = saveManager.loadGame();
+
+        // Устанавливаем монеты
+        gameModel.setBalance(data.totalCoin);
+
+        // Устанавливаем имя
+        gameModel.setUserName(data.playerName);
+
+        // Восстанавливаем grid
+        GameGridAdapter gameGrid = GameGridAdapter.getInstance();
+        int[][] loadedGrid = data.grid;
+        for (int i = 0; i < 8; i++) {
+            int row = i / 2;
+            int col = i % 2;
+            gameGrid.setCell(row, col, loadedGrid[row][col]);
+        }
+
+        // Восстанавливаем purchasedCounts в C++
+        restorePurchasedCounts(data.purchasedCounts);
+
+        gameGrid.notifyDataSetChanged();
+
+        // Если первый запуск - сразу сохраняем начальное состояние
+        if (data.isFirstLaunch) {
+            saveGameState();
+            Log.d("MainBoard", "First launch - saved initial state");
+        }
     }
 }

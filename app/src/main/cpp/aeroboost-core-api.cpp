@@ -1,6 +1,14 @@
 #include <jni.h>
 #include <string>
 #include <vector>
+#include <android/log.h>
+#define LOG_TAG "PlaneGame"
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+
+static JavaVM* g_jvm = nullptr;
+static jclass g_mainBoardClass = nullptr;
+static jmethodID g_saveMethod = nullptr;
+static jmethodID g_loadMethod = nullptr;
 
 // Структура самолета
 struct Plane {
@@ -308,6 +316,7 @@ Java_ru_livins_aeroboost_view_MainBoardActivity_clearCurPurchased(JNIEnv *env, j
     for (int i = 0; i < planes.size(); ++i) {
         planes[i].currentPurchased = 0;
     }
+    return 0;
 }
 extern "C"
 JNIEXPORT jint JNICALL
@@ -322,4 +331,16 @@ Java_ru_livins_aeroboost_model_GameModel_nowGiftLevelPlane(JNIEnv *env, jclass c
         }
     }
     return level;
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_ru_livins_aeroboost_view_MainBoardActivity_restorePurchasedCounts(JNIEnv *env, jclass clazz,
+                                                                       jintArray array) {
+    jsize len = env->GetArrayLength(array);
+    jint* elements = env->GetIntArrayElements(array, nullptr);
+
+    for (int i = 0; i < len && i < planes.size(); ++i) {
+        planes[i].currentPurchased = elements[i];
+    }
+    env->ReleaseIntArrayElements(array, elements, JNI_ABORT);
 }

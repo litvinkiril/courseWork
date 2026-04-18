@@ -161,4 +161,9 @@ public class GameGridAdapter extends BaseAdapter {
         grid[position / 2][position%2] -= 10;
         notifyDataSetChanged();
     }
+
+    public void setCell(int row, int col, int i) {
+        grid[row][col] = i;
+        notifyDataSetChanged();
+    }
 }

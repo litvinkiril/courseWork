@@ -24,7 +24,7 @@ public class ShopActivity extends AppCompatActivity
 
     // Нативные методы
     private static native int getPlanePrice(int planeId);
-    private static native int getPlanePurchased(int planeId);
+    public static native int getPlanePurchased(int planeId);
     private static native int getPlaneTotalCps(int planeId);
     private static native double tryBuyPlane(int planeId, double currentBalance);
     private static native String getPlaneName(int planeId);

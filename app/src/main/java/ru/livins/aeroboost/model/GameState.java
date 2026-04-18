@@ -23,12 +23,4 @@ public class GameState implements Serializable {
     private List<RunningPlane> runningPlanes;
     public List<RunningPlane> getRunningPlanes() { return runningPlanes; }
     public void setRunningPlanes(List<RunningPlane> runningPlanes) { this.runningPlanes = runningPlanes; }
-
-    private List<Integer> giftPlanes;
-    public List<Integer> getGiftPlanes() { return giftPlanes; }
-    public void setGiftPlanes(List<Integer> runningPlanes) { this.giftPlanes = runningPlanes; }
-    public void clearGiftPlanes() {
-        giftPlanes = new ArrayList<>();
-    }
-
 }
