@@ -477,6 +477,7 @@ public class MainBoardActivity extends AppCompatActivity {
 
         // 6. Обновляем UI
         totalProfitRateTextView.setText("0.00");
+        totalCoinsTextView.setText("1000");
         gameBoardView.invalidate();
 
         // 7. Перезапускаем активити для полного сброса
