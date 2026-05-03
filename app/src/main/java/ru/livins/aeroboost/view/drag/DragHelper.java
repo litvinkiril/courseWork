@@ -149,14 +149,7 @@ public class DragHelper {
     }
 
     private void deletePlane(int row, int col, int level) {
-        RunningPlane planeToRemove = gridPlanes[row][col];
-        if (planeToRemove != null) {
-            gridPlanes[row][col] = null;
-            viewModel.onPlaneRemoved(planeToRemove);
-            gameBoardView.removeRunningPlane(planeToRemove);
-            gridAdapter.cellClicked(row * 2 + col);
-            toastHelper.showToast("Самолет удален!");
-        }
+        gridAdapter.setLevelOnCell(row *2 + col, 0);
     }
 
     private void mergePlane(int fromPosition, int toPosition) {
