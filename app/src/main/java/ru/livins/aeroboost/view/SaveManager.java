@@ -11,7 +11,8 @@ public class SaveManager {
     private static final String KEY_GRID = "grid";
     private static final String KEY_COUNTS = "purchased_counts";
     private static final String KEY_NAME = "player_name";
-    private static final String KEY_HAS_SAVE = "has_save";  // ← НОВЫЙ КЛЮЧ
+    private static final String KEY_HAS_SAVE = "has_save";
+    private static final String KEY_OPENED = "was_opened";
 
     private SharedPreferences prefs;
 
@@ -19,7 +20,7 @@ public class SaveManager {
         prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
-    public void saveGame(int[][] grid, int[] purchasedCounts, String playerName, double totalCoin) {
+    public void saveGame(int[][] grid, int[] purchasedCounts, String playerName, double totalCoin, boolean[] isOpened) {
         SharedPreferences.Editor editor = prefs.edit();
 
         // Отмечаем что сохранение существует
@@ -43,6 +44,11 @@ public class SaveManager {
         // Сохраняем имя
         editor.putString(KEY_NAME, playerName);
 
+        // Сохраняем открытие самолетиков как JSON
+        JSONArray openedArray = new JSONArray();
+        for (boolean b : isOpened) openedArray.put(b);
+        editor.putString(KEY_OPENED, openedArray.toString());
+
         editor.apply();
         Log.d("SaveManager", "Saved: coins=" + totalCoin + ", player=" + playerName);
     }
@@ -50,6 +56,7 @@ public class SaveManager {
     public GameSaveData loadGame() {
         int[][] grid = new int[4][2];
         int[] purchasedCounts = new int[10];
+        boolean[] isOpened = new boolean[10];
         String playerName = "Player";
         double totalCoin;
         boolean isFirstLaunch;
@@ -61,11 +68,11 @@ public class SaveManager {
             // ПЕРВЫЙ ЗАПУСК
             totalCoin = 1000.0;
             purchasedCounts[0] = 1;  // Первый самолет доступен
+            isOpened[0] = true;
             Log.d("SaveManager", "FIRST LAUNCH: coins=1000, plane0=1");
         } else {
             // ЗАГРУЗКА СУЩЕСТВУЮЩЕГО
             totalCoin = Double.longBitsToDouble(prefs.getLong(KEY_TOTAL_COINS, 0));
-            Log.d("SaveManager", "Loading saved: coins=" + totalCoin);
         }
 
         try {
@@ -89,6 +96,15 @@ public class SaveManager {
                 }
             }
 
+            // Загружаем isOpened
+            String openedStr = prefs.getString(KEY_OPENED, "");
+            if (!openedStr.isEmpty()) {
+                JSONArray openedArray = new JSONArray(openedStr);
+                for (int i = 0; i < openedArray.length() && i < isOpened.length; i++) {
+                    isOpened[i] = openedArray.getBoolean(i);
+                }
+            }
+
             // Загружаем имя
             if (!isFirstLaunch) {
                 playerName = prefs.getString(KEY_NAME, "Player");
@@ -100,7 +116,7 @@ public class SaveManager {
             e.printStackTrace();
         }
 
-        return new GameSaveData(grid, purchasedCounts, playerName, totalCoin, isFirstLaunch);
+        return new GameSaveData(grid, purchasedCounts, playerName, totalCoin, isFirstLaunch, isOpened);
     }
 
     public void clearSave() {
@@ -114,13 +130,15 @@ public class SaveManager {
         public String playerName;
         public double totalCoin;
         public boolean isFirstLaunch;
+        public boolean[] isOpened;
 
-        public GameSaveData(int[][] grid, int[] purchasedCounts, String playerName, double totalCoin, boolean isFirstLaunch) {
+        public GameSaveData(int[][] grid, int[] purchasedCounts, String playerName, double totalCoin, boolean isFirstLaunch, boolean[] isOpened) {
             this.grid = grid;
             this.purchasedCounts = purchasedCounts;
             this.playerName = playerName;
             this.totalCoin = totalCoin;
             this.isFirstLaunch = isFirstLaunch;
+            this.isOpened = isOpened;
         }
     }
 }

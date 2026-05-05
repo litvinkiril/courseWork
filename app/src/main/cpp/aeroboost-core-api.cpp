@@ -355,3 +355,30 @@ Java_ru_livins_aeroboost_view_drag_DragHelper_isfirstopen(JNIEnv *env, jclass cl
     }
     return false;
 }
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_ru_livins_aeroboost_view_MainBoardActivity_isOpen(JNIEnv *env, jclass clazz, jint level) {
+    return planes[level].open;
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_ru_livins_aeroboost_view_MainBoardActivity_restoreOpenedPlanes(JNIEnv *env, jclass clazz,
+                                                                    jbooleanArray is_opened) {
+    jboolean *elements = env->GetBooleanArrayElements(is_opened, nullptr);
+    if (elements == nullptr) return;
+
+    for (int i = 0; i < 10; ++i) {
+        planes[i].open = elements[i];
+    }
+
+    env->ReleaseBooleanArrayElements(is_opened, elements, JNI_ABORT);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_ru_livins_aeroboost_view_MainBoardActivity_clearOpenedPlanes(JNIEnv *env, jclass clazz) {
+    planes[1].open = true;
+    for (int i = 1; i < 10; ++i) {
+        planes[i].open = false;
+    }
+    return;
+}

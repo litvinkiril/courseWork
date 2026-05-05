@@ -26,7 +26,6 @@ public class ShopActivity extends AppCompatActivity
     private static native int getPlanePrice(int planeId);
     public static native int getPlanePurchased(int planeId);
     private static native int getPlaneTotalCps(int planeId);
-    private static native double tryBuyPlane(int planeId, double currentBalance);
     private static native String getPlaneName(int planeId);
     private static native String getPlaneImageName(int planeId);
     private static native int getPlaneCpsPerUnit(int planeId);

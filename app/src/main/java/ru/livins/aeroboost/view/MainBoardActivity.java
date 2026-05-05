@@ -40,6 +40,10 @@ public class MainBoardActivity extends AppCompatActivity {
     private static native int getPlaneCost(int planeId);
     private static native int clearCurPurchased();
     private static native void restorePurchasedCounts(int[] array);
+    private static native boolean isOpen(int level);
+    private static native void clearOpenedPlanes();
+    private static native void restoreOpenedPlanes(boolean[] isOpened);
+
 
     // ==================== CONSTANTS ====================
     private static final char[] LETTERS = new char[]{'K', 'M', 'B', 't'};
@@ -449,7 +453,7 @@ public class MainBoardActivity extends AppCompatActivity {
     public void clearMainBoard() {
         // 1. Очищаем сохранение
         saveManager.clearSave();
-
+        clearOpenedPlanes();
         // 2. Убираем все самолеты с трассы
         for (int row = 0; row < GRID_ROWS; ++row) {
             for (int col = 0; col < GRID_COLS; ++col) {
@@ -516,8 +520,11 @@ public class MainBoardActivity extends AppCompatActivity {
         if (playerName == null) playerName = "Player";
 
         double totalCoin = gameModel.getTotalCoins();
-
-        saveManager.saveGame(grid, purchasedCounts, playerName, totalCoin);
+        boolean[] wasOpened = new boolean[10];
+        for (int i = 0; i < 10; ++i) {
+            wasOpened[i] = isOpen(i);
+        }
+        saveManager.saveGame(grid, purchasedCounts, playerName, totalCoin, wasOpened);
     }
 
     private void loadGameState() {
@@ -540,7 +547,7 @@ public class MainBoardActivity extends AppCompatActivity {
 
         // Восстанавливаем purchasedCounts в C++
         restorePurchasedCounts(data.purchasedCounts);
-
+        restoreOpenedPlanes(data.isOpened);
         gameGrid.notifyDataSetChanged();
 
         // Если первый запуск - сразу сохраняем начальное состояние
