@@ -20,21 +20,22 @@ struct Plane {
     int currentPurchased;       // сколько уже куплено
     int cpsPerUnit;             // C/S за один самолет
     const char* blockImageName;
+    bool open;
 };
 
 // База данных самолетов
 std::vector<Plane> planes = {
         // id, name,      image,    base, price/ед., макс, куплено, C/S за ед.
-        {0, "1. Stipa",   "plane1",  100,   10,   0,   5, "airplane001"},
-        {1, "2. SuperMarin",   "plane2",  300,  20,  0,   10, "airplane001"},
-        {2, "3. Mikoy",   "plane3",  500,  100,   0,   20, "airplane001"},
-        {3, "4. Yako",   "plane4",  1000, 250, 0,   40, "blockplane4"},
-        {4, "5. Voughtent",   "plane5",  2500, 500, 0,   80, "blockplane5"},
-        {5, "6. Bufaloo",   "plane6",  5000, 1000, 0,   160, "blockplane6"},
-        {6, "7. Brew",   "plane7",  10000,2000, 0,   320, "blockplane7"},
-        {7, "8. Gruman",   "plane8",  25000,5000, 0,   640, "blockplane8"},
-        {8, "9. Flyer-1",   "plane9",  50000,10000, 0,   1280, "blockplane9"},
-        {9, "10. Flyer-2",  "plane10", 100000,25000, 0,   2560, "blockplane10"}
+        {0, "1. Stipa",   "plane1",  100,   10,   0,   5, "airplane001", true},
+        {1, "2. SuperMarin",   "plane2",  300,  20,  0,   10, "airplane001", false},
+        {2, "3. Mikoy",   "plane3",  500,  100,   0,   20, "airplane001", false},
+        {3, "4. Yako",   "plane4",  1000, 250, 0,   40, "blockplane4", false},
+        {4, "5. Voughtent",   "plane5",  2500, 500, 0,   80, "blockplane5", false},
+        {5, "6. Bufaloo",   "plane6",  5000, 1000, 0,   160, "blockplane6", false},
+        {6, "7. Brew",   "plane7",  10000,2000, 0,   320, "blockplane7", false},
+        {7, "8. Gruman",   "plane8",  25000,5000, 0,   640, "blockplane8", false},
+        {8, "9. Flyer-1",   "plane9",  50000,10000, 0,   1280, "blockplane9", false},
+        {9, "10. Flyer-2",  "plane10", 100000,25000, 0,   2560, "blockplane10", false}
 };
 
 // Рассчитать текущую цену для самолета
@@ -343,4 +344,14 @@ Java_ru_livins_aeroboost_view_MainBoardActivity_restorePurchasedCounts(JNIEnv *e
         planes[i].currentPurchased = elements[i];
     }
     env->ReleaseIntArrayElements(array, elements, JNI_ABORT);
+}
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_ru_livins_aeroboost_view_drag_DragHelper_isfirstopen(JNIEnv *env, jclass clazz, jint level) {
+    bool was = planes[level].open;
+    planes[level].open = true;
+    if (!was) {
+        return true;
+    }
+    return false;
 }

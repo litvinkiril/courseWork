@@ -13,10 +13,12 @@ import ru.livins.aeroboost.R;
 import ru.livins.aeroboost.adapter.GameGridAdapter;
 import ru.livins.aeroboost.model.RunningPlane;
 import ru.livins.aeroboost.view.GameBoardView;
+import ru.livins.aeroboost.view.MainBoardActivity;
 import ru.livins.aeroboost.viewmodel.MainBoardViewModel;
 
 public class DragHelper {
 
+    private static native boolean isfirstopen(int level);
     private final GridView gridView;
     private final GameGridAdapter gridAdapter;
     private final RunningPlane[][] gridPlanes;
@@ -25,6 +27,8 @@ public class DragHelper {
     private final RubbishHandler rubbishHandler;
     private final CellHighlighter cellHighlighter;
     private final ToastHelper toastHelper;
+
+
 
     public DragHelper(GridView gridView, GameGridAdapter gridAdapter,
                       RunningPlane[][] gridPlanes, MainBoardViewModel viewModel,
@@ -153,6 +157,13 @@ public class DragHelper {
     }
 
     private void mergePlane(int fromPosition, int toPosition) {
+        int levelTo = gridAdapter.getLevelPlane(toPosition);
+        if (levelTo == 9) {
+            return;
+        }
+        if (isfirstopen(levelTo)) {
+            MainBoardActivity.playMergeAnimationStatic(levelTo);
+        }
         gridAdapter.upgradePlane(fromPosition, toPosition);
     }
 

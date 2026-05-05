@@ -4,18 +4,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.LinearLayout;
+import android.widget.VideoView;
+import android.content.ClipData;
+import android.net.Uri;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-
-import android.content.ClipData;
-import android.view.View;
 
 import ru.livins.aeroboost.R;
 import ru.livins.aeroboost.adapter.GameGridAdapter;
@@ -141,7 +144,7 @@ public class MainBoardActivity extends AppCompatActivity {
         String imageName = "plane" + planeLevel;
         int imageResId = getResources().getIdentifier(imageName, "drawable", getPackageName());
 
-        buyPlaneImageButton.setImageResource(imageResId != 0 ? imageResId : R.drawable.plane2);
+        buyPlaneImageButton.setImageResource(imageResId != 0 ? imageResId : R.drawable.plane1);
         buyPlanePrice.setText(String.valueOf(cost));
         buyPlaneLevel.setText(level);
         btnBuyPlane.setAlpha(1.0f);
@@ -544,6 +547,63 @@ public class MainBoardActivity extends AppCompatActivity {
         if (data.isFirstLaunch) {
             saveGameState();
             Log.d("MainBoard", "First launch - saved initial state");
+        }
+        setImageBuyBtn();
+    }
+
+
+    //--------------------ANIMATION----------------------
+
+    public static void playMergeAnimationStatic(int planeLevel) {
+        if (mainBoardinstance != null) {
+            mainBoardinstance.playMergeAnimation(planeLevel);
+        }
+    }
+    public void playMergeAnimation(int planeLevel) {
+        String videoName = "animation_merge_plane" + planeLevel;
+        int videoRes = getResources().getIdentifier(videoName, "raw", getPackageName());
+
+        if (videoRes == 0) {
+            Log.e("Anim", "Video not found: " + videoName);
+            return;
+        }
+
+        VideoView videoView = new VideoView(this);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT
+        );
+        videoView.setLayoutParams(params);
+        videoView.setClickable(true);
+        videoView.setFocusable(true);
+
+        String path = "android.resource://" + getPackageName() + "/" + videoRes;
+        videoView.setVideoURI(Uri.parse(path));
+
+        videoView.setOnPreparedListener(mp -> {
+            mp.setLooping(false);
+        });
+
+        // По завершению ставим на паузу на последнем кадре
+        videoView.setOnCompletionListener(mp -> {
+            ViewGroup rootView = findViewById(android.R.id.content);
+            if (rootView != null) {
+                rootView.removeView(videoView);
+            }
+        });
+
+        // При нажатии — убрать
+        videoView.setOnClickListener(v -> {
+            ViewGroup rootView = findViewById(android.R.id.content);
+            if (rootView != null) {
+                rootView.removeView(videoView);
+            }
+        });
+
+        ViewGroup rootView = findViewById(android.R.id.content);
+        if (rootView != null) {
+            rootView.addView(videoView);
+            videoView.start();
         }
     }
 }
