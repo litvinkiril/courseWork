@@ -557,8 +557,6 @@ public class MainBoardActivity extends AppCompatActivity {
         }
         setImageBuyBtn();
     }
-
-
     //--------------------ANIMATION----------------------
 
     public static void playMergeAnimationStatic(int planeLevel) {

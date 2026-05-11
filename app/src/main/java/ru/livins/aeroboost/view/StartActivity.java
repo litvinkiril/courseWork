@@ -21,5 +21,6 @@ public class StartActivity extends AppCompatActivity {
     public void onStartGame(View view) {
         var startGameDataIntent = new Intent(this, MainBoardActivity.class);
         startActivity(startGameDataIntent);
+        finish();
     }
 }
