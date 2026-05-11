@@ -158,7 +158,7 @@ public class DragHelper {
 
     private void mergePlane(int fromPosition, int toPosition) {
         int levelTo = gridAdapter.getLevelPlane(toPosition);
-        if (levelTo == 9) {
+        if (levelTo > 10) {
             return;
         }
         if (isfirstopen(levelTo)) {
